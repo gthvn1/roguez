@@ -16,18 +16,50 @@ const std = @import("std");
 // - We consider the Y-axis from top to bottom (that is ROW)
 // - So (ROW, COL) <=> (Y, X)
 
-pub const Board = struct {
-    const row_sz: comptime_int = 4;
-    const col_sz: comptime_int = 8;
-    const board: [row_sz][col_sz]u8 = [row_sz][col_sz]u8{
-        [_]u8{'.'} ** col_sz,
-        [_]u8{'.'} ** col_sz,
-        [_]u8{'.'} ** col_sz,
-        [_]u8{'.'} ** col_sz,
-    };
+pub const board_str =
+    \\########
+    \\#......#
+    \\#......#
+    \\#...@..#
+    \\#......#
+    \\#......#
+    \\########
+;
 
-    pub fn print() void {
-        for (board) |row| {
+pub const Board = struct {
+    b: [][]u8,
+
+    pub fn create(allocator: std.mem.Allocator, str: []const u8) !Board {
+        // We need to know the number of rows in [str] to be able to allocate [b] correctly.
+        // So we do a first iteration to compute the number of rows.
+        var str_it = std.mem.tokenizeSequence(u8, str, "\n");
+        var row_count: usize = 0;
+        while (str_it.next()) |_| {
+            row_count += 1;
+        }
+
+        // Now we can allocate rows and go through each strings.
+        var b = try allocator.alloc([]u8, row_count);
+        var idx: usize = 0;
+        str_it = std.mem.tokenizeSequence(u8, str, "\n");
+        while (str_it.next()) |line| {
+            b[idx] = try allocator.alloc(u8, line.len);
+            std.mem.copyForwards(u8, b[idx], line);
+            idx += 1;
+        }
+
+        return .{ .b = b };
+    }
+
+    pub fn destroy(self: *Board, allocator: std.mem.Allocator) void {
+        for (self.b) |row| {
+            allocator.free(row);
+        }
+        allocator.free(self.b);
+    }
+
+    pub fn print(self: *Board) void {
+        for (self.b) |row| {
             for (row) |cell| {
                 std.debug.print("{c} ", .{cell});
             }
@@ -48,25 +80,4 @@ pub fn readChar() u8 {
 
     std.debug.print("You pressed: 0x{x}\n", .{carlu[0]});
     return carlu[0];
-}
-
-pub fn bufferedPrint() !void {
-    // Stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout = &stdout_writer.interface;
-
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try stdout.flush(); // Don't forget to flush!
-}
-
-pub fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
-
-test "basic add functionality" {
-    try std.testing.expect(add(3, 7) == 10);
 }
