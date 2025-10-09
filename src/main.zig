@@ -1,10 +1,9 @@
 const std = @import("std");
 const roguez = @import("roguez");
 
-pub fn main() !void {
+pub fn main() void {
     // Prints to stderr, ignoring potential errors.
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-    try roguez.bufferedPrint();
+    roguez.printBoard();
 }
 
 test "simple test" {
