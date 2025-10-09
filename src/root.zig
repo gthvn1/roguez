@@ -1,8 +1,38 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
 
+// Our board is ROW x COL
+// For example we can have:
+//
+//     ########
+//     #......#
+//     #......#
+//     ########
+//
+// - It is a 4 x 8 board
+// - Top left is 0 x 0
+// - Bottom right is 3 x 7
+// - We consider the X-axis from left to right (that is COL)
+// - We consider the Y-axis from top to bottom (that is ROW)
+// - So (ROW, COL) <=> (Y, X)
+
+const row_sz: comptime_int = 4;
+const col_sz: comptime_int = 8;
+const board: [row_sz][col_sz]u8 = [row_sz][col_sz]u8{
+    [_]u8{'.'} ** col_sz,
+    [_]u8{'.'} ** col_sz,
+    [_]u8{'.'} ** col_sz,
+    [_]u8{'.'} ** col_sz,
+};
+
 pub fn printBoard() void {
-    std.debug.print("TODO: print a board\n", .{});
+    for (board) |row| {
+        for (row) |cell| {
+            std.debug.print("{c} ", .{cell});
+        }
+        std.debug.print("\n", .{});
+    }
+    std.debug.print("\n", .{});
 }
 
 pub fn bufferedPrint() !void {
