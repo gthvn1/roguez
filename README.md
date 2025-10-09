@@ -6,4 +6,4 @@
 
 # Steps
 
-- [] create a board and print it
+- [ ] create a board and print it
