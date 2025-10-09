@@ -16,23 +16,38 @@ const std = @import("std");
 // - We consider the Y-axis from top to bottom (that is ROW)
 // - So (ROW, COL) <=> (Y, X)
 
-const row_sz: comptime_int = 4;
-const col_sz: comptime_int = 8;
-const board: [row_sz][col_sz]u8 = [row_sz][col_sz]u8{
-    [_]u8{'.'} ** col_sz,
-    [_]u8{'.'} ** col_sz,
-    [_]u8{'.'} ** col_sz,
-    [_]u8{'.'} ** col_sz,
-};
+pub const Board = struct {
+    const row_sz: comptime_int = 4;
+    const col_sz: comptime_int = 8;
+    const board: [row_sz][col_sz]u8 = [row_sz][col_sz]u8{
+        [_]u8{'.'} ** col_sz,
+        [_]u8{'.'} ** col_sz,
+        [_]u8{'.'} ** col_sz,
+        [_]u8{'.'} ** col_sz,
+    };
 
-pub fn printBoard() void {
-    for (board) |row| {
-        for (row) |cell| {
-            std.debug.print("{c} ", .{cell});
+    pub fn print() void {
+        for (board) |row| {
+            for (row) |cell| {
+                std.debug.print("{c} ", .{cell});
+            }
+            std.debug.print("\n", .{});
         }
         std.debug.print("\n", .{});
     }
-    std.debug.print("\n", .{});
+};
+
+pub fn readChar() u8 {
+    var stdin_buffer: [1]u8 = undefined;
+    var stdin_reader = std.fs.File.stdin().reader(&stdin_buffer);
+    const stdin = &stdin_reader.interface;
+
+    var carlu: [1]u8 = undefined;
+
+    _ = stdin.readSliceShort(&carlu) catch return 0;
+
+    std.debug.print("You pressed: 0x{x}\n", .{carlu[0]});
+    return carlu[0];
 }
 
 pub fn bufferedPrint() !void {

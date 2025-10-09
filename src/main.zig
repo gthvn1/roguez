@@ -3,7 +3,20 @@ const roguez = @import("roguez");
 
 pub fn main() void {
     // Prints to stderr, ignoring potential errors.
-    roguez.printBoard();
+    while (true) {
+        roguez.Board.print();
+        std.debug.print("==== HELP ====\n", .{});
+        std.debug.print(" 'q' to quit\n", .{});
+        std.debug.print(" 'h' to move left\n", .{});
+        std.debug.print(" 'j' to move down\n", .{});
+        std.debug.print(" 'k' to move up\n", .{});
+        std.debug.print(" 'l' to move right\n", .{});
+        std.debug.print("Press a key, then enter > ", .{});
+        switch (roguez.readChar()) {
+            'q' => break,
+            else => continue,
+        }
+    }
 }
 
 test "simple test" {
