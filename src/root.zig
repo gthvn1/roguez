@@ -54,8 +54,16 @@ pub const Game = struct {
     }
 
     pub fn print(self: *const Game) void {
-        // TODO: add the state
-        self.board.print();
+        // TODO: add the position of robot from state
+        var board_iter = self.board.iter();
+
+        while (board_iter.next()) |cell| {
+            if (cell.col == 0) {
+                std.debug.print("\n", .{});
+            }
+            std.debug.print("{c} ", .{cell.car});
+        }
+        std.debug.print("\n\n", .{});
     }
 };
 

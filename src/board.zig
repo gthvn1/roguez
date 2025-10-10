@@ -1,5 +1,40 @@
 const std = @import("std");
 
+const Cell = struct {
+    row: usize,
+    col: usize,
+    car: u8,
+};
+
+const BoardIterator = struct {
+    board: *const Board,
+    row: usize,
+    col: usize,
+
+    pub fn next(it: *BoardIterator) ?Cell {
+        if (it.row >= it.board.b.len) return null;
+        const board_col = it.board.b[it.row];
+
+        if (it.col >= board_col.len) return null;
+
+        const cell = Cell{
+            .row = it.row,
+            .col = it.col,
+            .car = board_col[it.col],
+        };
+
+        // Update the iterator
+        if (it.col + 1 == board_col.len) {
+            it.row = it.row + 1;
+            it.col = 0;
+        } else {
+            it.col += 1;
+        }
+
+        return cell;
+    }
+};
+
 pub const Board = struct {
     b: [][]u8,
 
@@ -16,6 +51,9 @@ pub const Board = struct {
         var b = try allocator.alloc([]u8, row_count);
         var idx: usize = 0;
         str_it = std.mem.tokenizeSequence(u8, str, "\n");
+
+        // TODO: only read wall and floor. Other items are not port of the board
+        // and should be ignored.
         while (str_it.next()) |line| {
             b[idx] = try allocator.alloc(u8, line.len);
             std.mem.copyForwards(u8, b[idx], line);
@@ -32,14 +70,11 @@ pub const Board = struct {
         allocator.free(self.b);
     }
 
-    pub fn print(self: *const Board) void {
-        std.debug.print("\n", .{});
-        for (self.b) |row| {
-            for (row) |cell| {
-                std.debug.print("{c} ", .{cell});
-            }
-            std.debug.print("\n", .{});
-        }
-        std.debug.print("\n", .{});
+    pub fn iter(self: *const Board) BoardIterator {
+        return .{
+            .board = self,
+            .row = 0,
+            .col = 0,
+        };
     }
 };
