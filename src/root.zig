@@ -40,23 +40,22 @@ pub const Game = struct {
     board: Board,
     state: State,
 
-    pub fn init(allocator: std.mem.Allocator, str: []const u8) !Game {
+    pub fn create(allocator: std.mem.Allocator, str: []const u8) !Game {
         const board = try Board.create(allocator, str);
-        const state = try State.create(allocator, str);
         return .{
             .board = board,
-            .state = state,
+            .state = State.init(str),
         };
+    }
+
+    pub fn destroy(self: *Game, allocator: std.mem.Allocator) void {
+        self.board.destroy(allocator);
+        self.state.deinit();
     }
 
     pub fn print(self: *const Game) void {
         // TODO: add the state
         self.board.print();
-    }
-
-    pub fn free(self: *Game, allocator: std.mem.Allocator) void {
-        self.board.destroy(allocator);
-        self.state.destroy(allocator);
     }
 };
 

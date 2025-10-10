@@ -7,8 +7,8 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     // Prints to stderr, ignoring potential errors.
-    var g = try roguez.Game.init(allocator, roguez.board_str[0..]);
-    defer g.free(allocator);
+    var g = try roguez.Game.create(allocator, roguez.board_str[0..]);
+    defer g.destroy(allocator);
 
     while (true) {
         g.print();
