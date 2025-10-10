@@ -59,6 +59,7 @@ pub const Board = struct {
     }
 
     pub fn print(self: *Board) void {
+        std.debug.print("\n", .{});
         for (self.b) |row| {
             for (row) |cell| {
                 std.debug.print("{c} ", .{cell});
@@ -70,14 +71,25 @@ pub const Board = struct {
 };
 
 pub fn readChar() u8 {
+    // We need to set the terminal in Raw mode to avoid pressing enter
+    // TODO:
+    //   - Should we restore the old_settings?
+    //   - Can we avoid doing this each time readChar is called?
+    var settings: std.os.linux.termios = undefined;
+    _ = std.os.linux.tcgetattr(0, &settings);
+
+    // Disabling canonical mode allow the input to be immediatly available
+    settings.lflag.ICANON = false;
+
+    _ = std.os.linux.tcsetattr(0, std.posix.TCSA.NOW, &settings);
+
+    // we can now read character without pressing enter
     var stdin_buffer: [1]u8 = undefined;
     var stdin_reader = std.fs.File.stdin().reader(&stdin_buffer);
     const stdin = &stdin_reader.interface;
 
-    var carlu: [1]u8 = undefined;
+    const carlu: u8 = stdin.peekByte() catch return 0;
 
-    _ = stdin.readSliceShort(&carlu) catch return 0;
-
-    std.debug.print("You pressed: 0x{x}\n", .{carlu[0]});
-    return carlu[0];
+    std.debug.print("\nYou pressed: 0x{x}\n", .{carlu});
+    return carlu;
 }
