@@ -20,9 +20,10 @@ pub const Game = struct {
 
     pub fn create(allocator: std.mem.Allocator, str: []const u8) !Game {
         const board = try Board.create(allocator, str);
+        const state = try State.init(str);
         return .{
             .board = board,
-            .state = State.init(str),
+            .state = state,
         };
     }
 
@@ -32,16 +33,23 @@ pub const Game = struct {
     }
 
     pub fn print(self: *const Game) void {
-        // TODO: add the position of robot from state
         var board_iter = self.board.iter();
+        const player_row = self.state.player_row;
+        const player_col = self.state.player_col;
 
         while (board_iter.next()) |cell| {
             if (cell.col == 0) {
                 std.debug.print("\n", .{});
             }
-            std.debug.print("{c} ", .{cell.car});
+
+            if (cell.row == player_row and cell.col == player_col) {
+                std.debug.print("P ", .{});
+            } else {
+                std.debug.print("{c} ", .{cell.tile.toChar()});
+            }
         }
         std.debug.print("\n\n", .{});
+        std.debug.print("player at row:{d} col:{d}\n", .{ self.state.player_row, self.state.player_col });
     }
 };
 

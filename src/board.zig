@@ -25,10 +25,29 @@ pub const sample =
     \\############
 ;
 
+const Tile = enum {
+    Wall,
+    Floor,
+
+    pub fn fromChar(c: u8) Tile {
+        return switch (c) {
+            '#' => .Wall,
+            else => .Floor,
+        };
+    }
+
+    pub fn toChar(self: Tile) u8 {
+        return switch (self) {
+            .Wall => '#',
+            .Floor => '.',
+        };
+    }
+};
+
 const Cell = struct {
     row: usize,
     col: usize,
-    car: u8,
+    tile: Tile,
 };
 
 const BoardIterator = struct {
@@ -45,7 +64,7 @@ const BoardIterator = struct {
         const cell = Cell{
             .row = it.row,
             .col = it.col,
-            .car = board_col[it.col],
+            .tile = board_col[it.col],
         };
 
         // Update the iterator
@@ -61,7 +80,7 @@ const BoardIterator = struct {
 };
 
 pub const Board = struct {
-    b: [][]u8,
+    b: [][]Tile,
 
     pub fn create(allocator: std.mem.Allocator, str: []const u8) !Board {
         // We need to know the number of rows in [str] to be able to allocate [b] correctly.
@@ -73,18 +92,14 @@ pub const Board = struct {
         }
 
         // Now we can allocate rows and go through each strings.
-        var b = try allocator.alloc([]u8, row_count);
+        var b = try allocator.alloc([]Tile, row_count);
         var row_idx: usize = 0;
         str_it = std.mem.tokenizeSequence(u8, str, "\n");
 
         while (str_it.next()) |line| {
-            b[row_idx] = try allocator.alloc(u8, line.len);
+            b[row_idx] = try allocator.alloc(Tile, line.len);
             for (line, 0..) |c, col_idx| {
-                if (c == '#') {
-                    b[row_idx][col_idx] = '#';
-                } else {
-                    b[row_idx][col_idx] = '.';
-                }
+                b[row_idx][col_idx] = Tile.fromChar(c);
             }
             row_idx += 1;
         }
