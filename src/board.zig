@@ -1,5 +1,30 @@
 const std = @import("std");
 
+// Our board is ROW x COL
+// For example we can have:
+//
+//     ########
+//     #......#
+//     #......#
+//     ########
+//
+// - It is a 4 x 8 board
+// - Top left is 0 x 0
+// - Bottom right is 3 x 7
+// - We consider the X-axis from left to right (that is COL)
+// - We consider the Y-axis from top to bottom (that is ROW)
+// - So (ROW, COL) <=> (Y, X)
+
+pub const sample =
+    \\############
+    \\#....o.....#
+    \\#......o...#
+    \\#...@......#
+    \\#.....#....#
+    \\#.....#....#
+    \\############
+;
+
 const Cell = struct {
     row: usize,
     col: usize,
@@ -49,15 +74,19 @@ pub const Board = struct {
 
         // Now we can allocate rows and go through each strings.
         var b = try allocator.alloc([]u8, row_count);
-        var idx: usize = 0;
+        var row_idx: usize = 0;
         str_it = std.mem.tokenizeSequence(u8, str, "\n");
 
-        // TODO: only read wall and floor. Other items are not port of the board
-        // and should be ignored.
         while (str_it.next()) |line| {
-            b[idx] = try allocator.alloc(u8, line.len);
-            std.mem.copyForwards(u8, b[idx], line);
-            idx += 1;
+            b[row_idx] = try allocator.alloc(u8, line.len);
+            for (line, 0..) |c, col_idx| {
+                if (c == '#') {
+                    b[row_idx][col_idx] = '#';
+                } else {
+                    b[row_idx][col_idx] = '.';
+                }
+            }
+            row_idx += 1;
         }
 
         return .{ .b = b };

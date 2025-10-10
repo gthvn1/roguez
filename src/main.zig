@@ -7,7 +7,10 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     // Prints to stderr, ignoring potential errors.
-    var g = try roguez.Game.create(allocator, roguez.board_str[0..]);
+    var g = try roguez.Game.create(
+        allocator,
+        roguez.board_sample[0..],
+    );
     defer g.destroy(allocator);
 
     while (true) {
@@ -18,7 +21,7 @@ pub fn main() !void {
         std.debug.print(" 'j' to move down\n", .{});
         std.debug.print(" 'k' to move up\n", .{});
         std.debug.print(" 'l' to move right\n", .{});
-        std.debug.print("Press a key, then enter > ", .{});
+        std.debug.print("Your choice > ", .{});
         switch (roguez.readChar()) {
             'q' => break,
             else => continue,

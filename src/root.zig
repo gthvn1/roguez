@@ -1,30 +1,8 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
 
-// Our board is ROW x COL
-// For example we can have:
-//
-//     ########
-//     #......#
-//     #......#
-//     ########
-//
-// - It is a 4 x 8 board
-// - Top left is 0 x 0
-// - Bottom right is 3 x 7
-// - We consider the X-axis from left to right (that is COL)
-// - We consider the Y-axis from top to bottom (that is ROW)
-// - So (ROW, COL) <=> (Y, X)
-
-pub const board_str =
-    \\########
-    \\#......#
-    \\#......#
-    \\#...@..#
-    \\#......#
-    \\#......#
-    \\########
-;
+// Expose the sample board
+pub const board_sample = @import("board.zig").sample;
 
 // Import submodules
 const Board = @import("board.zig").Board;
