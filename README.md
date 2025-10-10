@@ -6,4 +6,5 @@
 
 # Steps
 
-- [ ] create a board and print it
+- [ ] move robot around an empty map
+- [x] create a board and print it
