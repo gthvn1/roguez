@@ -7,11 +7,11 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     // Prints to stderr, ignoring potential errors.
-    var b = try roguez.Board.create(allocator, roguez.board_str[0..]);
-    defer b.destroy(allocator);
+    var g = try roguez.Game.init(allocator, roguez.board_str[0..]);
+    defer g.free(allocator);
 
     while (true) {
-        b.print();
+        g.print();
         std.debug.print("==== HELP ====\n", .{});
         std.debug.print(" 'q' to quit\n", .{});
         std.debug.print(" 'h' to move left\n", .{});

@@ -16,10 +16,6 @@ const std = @import("std");
 // - We consider the Y-axis from top to bottom (that is ROW)
 // - So (ROW, COL) <=> (Y, X)
 
-// Import submodules
-pub const State = @import("state.zig").State;
-pub const Board = @import("board.zig").Board;
-
 pub const board_str =
     \\########
     \\#......#
@@ -30,10 +26,36 @@ pub const board_str =
     \\########
 ;
 
+// Import submodules
+const State = @import("state.zig").State;
+const Board = @import("board.zig").Board;
+
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the player (@) and futur robots, boxes, traps... will be
 //   part of the state of the game.
 // - Board is static part, State is the moving part
+// - Game is the Board + State
+
+pub const Game = struct {
+    state: State,
+    board: Board,
+
+    pub fn init(allocator: std.mem.Allocator, str: []const u8) !Game {
+        const board = try Board.create(allocator, str);
+        return .{
+            .state = undefined,
+            .board = board,
+        };
+    }
+
+    pub fn print(self: *const Game) void {
+        self.board.print();
+    }
+
+    pub fn free(self: *Game, allocator: std.mem.Allocator) void {
+        self.board.destroy(allocator);
+    }
+};
 
 pub fn readChar() u8 {
     // We need to set the terminal in Raw mode to avoid pressing enter

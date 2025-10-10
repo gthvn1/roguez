@@ -32,7 +32,7 @@ pub const Board = struct {
         allocator.free(self.b);
     }
 
-    pub fn print(self: *Board) void {
+    pub fn print(self: *const Board) void {
         std.debug.print("\n", .{});
         for (self.b) |row| {
             for (row) |cell| {
