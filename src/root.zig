@@ -8,12 +8,18 @@ pub const board_sample = @import("board.zig").sample;
 const Board = @import("board.zig").Board;
 const State = @import("state.zig").State;
 
+pub const Dir = enum {
+    Up,
+    Down,
+    Left,
+    Right,
+};
+
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the robot (@) and futur robots, boxes, traps... will be
 //   part of the state of the game.
 // - Board is static part, State is the moving part
 // - Game is the Board + State
-
 pub const Game = struct {
     board: Board,
     state: State,
@@ -47,6 +53,19 @@ pub const Game = struct {
             }
         }
         std.debug.print("\n\n", .{});
+    }
+
+    pub fn moveRobot(self: *Game, direction: Dir) bool {
+        _ = self;
+
+        switch (direction) {
+            Dir.Up => std.debug.print("TODO: move robot Up\n", .{}),
+            Dir.Down => std.debug.print("TODO: move robot Down\n", .{}),
+            Dir.Left => std.debug.print("TODO: move robot Left\n", .{}),
+            Dir.Right => std.debug.print("TODO: move robot Right\n", .{}),
+        }
+
+        return false;
     }
 };
 

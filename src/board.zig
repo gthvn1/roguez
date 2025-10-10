@@ -11,9 +11,6 @@ const std = @import("std");
 // - It is a 4 x 8 board
 // - Top left is 0 x 0
 // - Bottom right is 3 x 7
-// - We consider the X-axis from left to right (that is COL)
-// - We consider the Y-axis from top to bottom (that is ROW)
-// - So (ROW, COL) <=> (Y, X)
 
 pub const sample =
     \\############
@@ -22,6 +19,8 @@ pub const sample =
     \\#...@......#
     \\#.....#....#
     \\#.....#....#
+    \\#..........#
+    \\#..........#
     \\############
 ;
 

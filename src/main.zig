@@ -1,5 +1,5 @@
 const std = @import("std");
-const roguez = @import("roguez");
+const r = @import("roguez");
 
 pub fn main() !void {
     const GPAtype = std.heap.GeneralPurposeAllocator(.{});
@@ -7,9 +7,9 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     // Prints to stderr, ignoring potential errors.
-    var g = try roguez.Game.create(
+    var g = try r.Game.create(
         allocator,
-        roguez.board_sample[0..],
+        r.board_sample[0..],
     );
     defer g.destroy(allocator);
 
@@ -21,8 +21,12 @@ pub fn main() !void {
         std.debug.print(" 'j' to move down\n", .{});
         std.debug.print(" 'k' to move up\n", .{});
         std.debug.print(" 'l' to move right\n", .{});
-        std.debug.print("Your choice > ", .{});
-        switch (roguez.readChar()) {
+        std.debug.print(" You can use arrows to move\n", .{});
+        switch (r.readChar()) {
+            'h', 0x44 => _ = g.moveRobot(r.Dir.Left),
+            'j', 0x42 => _ = g.moveRobot(r.Dir.Down),
+            'k', 0x41 => _ = g.moveRobot(r.Dir.Up),
+            'l', 0x43 => _ = g.moveRobot(r.Dir.Right),
             'q' => break,
             else => continue,
         }
