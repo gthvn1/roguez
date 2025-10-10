@@ -9,7 +9,7 @@ const Board = @import("board.zig").Board;
 const State = @import("state.zig").State;
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
-// - The position of the player (@) and futur robots, boxes, traps... will be
+// - The position of the robot (@) and futur robots, boxes, traps... will be
 //   part of the state of the game.
 // - Board is static part, State is the moving part
 // - Game is the Board + State
@@ -34,22 +34,19 @@ pub const Game = struct {
 
     pub fn print(self: *const Game) void {
         var board_iter = self.board.iter();
-        const player_row = self.state.player_row;
-        const player_col = self.state.player_col;
 
         while (board_iter.next()) |cell| {
             if (cell.col == 0) {
                 std.debug.print("\n", .{});
             }
 
-            if (cell.row == player_row and cell.col == player_col) {
-                std.debug.print("P ", .{});
+            if (self.state.isRobotAt(cell.row, cell.col)) {
+                std.debug.print("R ", .{});
             } else {
                 std.debug.print("{c} ", .{cell.tile.toChar()});
             }
         }
         std.debug.print("\n\n", .{});
-        std.debug.print("player at row:{d} col:{d}\n", .{ self.state.player_row, self.state.player_col });
     }
 };
 

@@ -1,14 +1,14 @@
 const std = @import("std");
 
-const player_tile: u8 = '@';
-
 const StateError = error{
-    PlayerNotFound,
+    RobotNotFound,
 };
 
 pub const State = struct {
-    player_col: usize,
-    player_row: usize,
+    robot_row: usize,
+    robot_col: usize,
+
+    const robot_tile: u8 = '@';
 
     pub fn init(str: []const u8) !State {
         // TODO: really find the row and col in the map or null if not found.
@@ -16,10 +16,11 @@ pub const State = struct {
         var col: usize = 0;
 
         for (str) |c| {
-            if (c == player_tile) {
+            if (c == robot_tile) {
+                std.debug.print("Found robot at row {d} col {d}\n", .{ row, col });
                 return .{
-                    .player_row = row,
-                    .player_col = col,
+                    .robot_row = row,
+                    .robot_col = col,
                 };
             }
 
@@ -31,7 +32,12 @@ pub const State = struct {
             }
         }
 
-        return StateError.PlayerNotFound;
+        return StateError.RobotNotFound;
+    }
+
+    pub fn isRobotAt(self: *const State, row: usize, col: usize) bool {
+        return row == self.robot_row and
+            col == self.robot_col;
     }
 
     pub fn deinit(self: *const State) void {
