@@ -27,8 +27,8 @@ pub const board_str =
 ;
 
 // Import submodules
-const State = @import("state.zig").State;
 const Board = @import("board.zig").Board;
+const State = @import("state.zig").State;
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the player (@) and futur robots, boxes, traps... will be
@@ -37,23 +37,26 @@ const Board = @import("board.zig").Board;
 // - Game is the Board + State
 
 pub const Game = struct {
-    state: State,
     board: Board,
+    state: State,
 
     pub fn init(allocator: std.mem.Allocator, str: []const u8) !Game {
         const board = try Board.create(allocator, str);
+        const state = try State.create(allocator, str);
         return .{
-            .state = undefined,
             .board = board,
+            .state = state,
         };
     }
 
     pub fn print(self: *const Game) void {
+        // TODO: add the state
         self.board.print();
     }
 
     pub fn free(self: *Game, allocator: std.mem.Allocator) void {
         self.board.destroy(allocator);
+        self.state.destroy(allocator);
     }
 };
 
