@@ -6,5 +6,7 @@
 
 # Steps
 
-- [ ] move robot around an empty map
+- [ ] move the objects
+- [ ] add some objects that can move
+- [x] move robot around an empty map
 - [x] create a board and print it

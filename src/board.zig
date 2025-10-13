@@ -1,4 +1,5 @@
 const std = @import("std");
+const Pos = @import("pos.zig").Pos;
 
 // Our board is ROW x COL
 // For example we can have:
@@ -111,6 +112,10 @@ pub const Board = struct {
             allocator.free(row);
         }
         allocator.free(self.b);
+    }
+
+    pub fn cellIsFloor(self: *Board, pos: Pos) bool {
+        return self.b[pos.row][pos.col] == Tile.Floor;
     }
 
     pub fn iter(self: *const Board) BoardIterator {

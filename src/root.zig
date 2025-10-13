@@ -7,6 +7,7 @@ pub const board_sample = @import("board.zig").sample;
 // Import submodules
 const Board = @import("board.zig").Board;
 const State = @import("state.zig").State;
+const Pos = @import("pos.zig").Pos;
 
 pub const Dir = enum {
     Up,
@@ -56,15 +57,27 @@ pub const Game = struct {
     }
 
     pub fn moveRobot(self: *Game, direction: Dir) bool {
-        _ = self;
+        const robot_pos = self.state.robotPos();
 
-        switch (direction) {
-            Dir.Up => std.debug.print("TODO: move robot Up\n", .{}),
-            Dir.Down => std.debug.print("TODO: move robot Down\n", .{}),
-            Dir.Left => std.debug.print("TODO: move robot Left\n", .{}),
-            Dir.Right => std.debug.print("TODO: move robot Right\n", .{}),
+        std.debug.print("Robot is at {d}x{d}\n", .{ robot_pos.row, robot_pos.col });
+
+        const next_pos =
+            switch (direction) {
+                Dir.Up => if (robot_pos.row > 0) Pos.init(robot_pos.row - 1, robot_pos.col) else null,
+                Dir.Down => Pos.init(robot_pos.row + 1, robot_pos.col),
+                Dir.Left => if (robot_pos.col > 0) Pos.init(robot_pos.row, robot_pos.col - 1) else null,
+                Dir.Right => Pos.init(robot_pos.row, robot_pos.col + 1),
+            };
+
+        if (next_pos == null) return false;
+        const new_pos = next_pos.?;
+
+        // Before moving we need to check if we will hit a wall
+        if (self.board.cellIsFloor(new_pos)) {
+            self.state.moveRobotTo(new_pos);
+        } else {
+            std.debug.print("Oops, you hit a wall...\n", .{});
         }
-
         return false;
     }
 };

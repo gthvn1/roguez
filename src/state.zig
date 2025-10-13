@@ -1,12 +1,12 @@
 const std = @import("std");
+const Pos = @import("pos.zig").Pos;
 
 const StateError = error{
     RobotNotFound,
 };
 
 pub const State = struct {
-    robot_row: usize,
-    robot_col: usize,
+    robot_pos: Pos,
 
     const robot_tile: u8 = '@';
 
@@ -18,10 +18,7 @@ pub const State = struct {
         for (str) |c| {
             if (c == robot_tile) {
                 std.debug.print("Found robot at row {d} col {d}\n", .{ row, col });
-                return .{
-                    .robot_row = row,
-                    .robot_col = col,
-                };
+                return .{ .robot_pos = Pos.init(row, col) };
             }
 
             if (c == '\n') {
@@ -36,8 +33,16 @@ pub const State = struct {
     }
 
     pub fn isRobotAt(self: *const State, row: usize, col: usize) bool {
-        return row == self.robot_row and
-            col == self.robot_col;
+        return row == self.robot_pos.row and
+            col == self.robot_pos.col;
+    }
+
+    pub fn robotPos(self: *const State) Pos {
+        return self.robot_pos;
+    }
+
+    pub fn moveRobotTo(self: *State, pos: Pos) void {
+        self.robot_pos = pos;
     }
 
     pub fn deinit(self: *const State) void {
