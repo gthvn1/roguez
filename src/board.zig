@@ -15,40 +15,38 @@ const Tile = enum {
     pub fn toChar(self: Tile) u8 {
         return switch (self) {
             .Wall => '#',
-            .Floor => '.',
+            .Floor => ' ',
         };
     }
 };
 
 const Cell = struct {
-    row: usize,
-    col: usize,
     tile: Tile,
+    pos: Pos,
 };
 
 const BoardIterator = struct {
     board: *const Board,
-    row: usize,
-    col: usize,
+    pos: Pos,
 
     pub fn next(it: *BoardIterator) ?Cell {
-        if (it.row >= it.board.b.len) return null;
-        const board_col = it.board.b[it.row];
+        if (it.pos.row >= it.board.b.len) return null;
 
-        if (it.col >= board_col.len) return null;
+        const raw_col = it.board.b[it.pos.row];
+
+        if (it.pos.col >= raw_col.len) return null;
 
         const cell = Cell{
-            .row = it.row,
-            .col = it.col,
-            .tile = board_col[it.col],
+            .pos = it.pos,
+            .tile = raw_col[it.pos.col],
         };
 
-        // Update the iterator
-        if (it.col + 1 == board_col.len) {
-            it.row = it.row + 1;
-            it.col = 0;
-        } else {
-            it.col += 1;
+        // advance iterator
+        it.pos.col += 1;
+        // and check if we reached the end of a row
+        if (it.pos.col == raw_col.len) {
+            it.pos.row += 1;
+            it.pos.col = 0;
         }
 
         return cell;
@@ -97,8 +95,7 @@ pub const Board = struct {
     pub fn iter(self: *const Board) BoardIterator {
         return .{
             .board = self,
-            .row = 0,
-            .col = 0,
+            .pos = .{ .row = 0, .col = 0 },
         };
     }
 };

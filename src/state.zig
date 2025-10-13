@@ -6,43 +6,46 @@ const StateError = error{
 };
 
 pub const State = struct {
-    robot_pos: Pos,
+    robot: Pos,
 
     const robot_tile: u8 = '@';
 
     pub fn init(str: []const u8) !State {
         // TODO: really find the row and col in the map or null if not found.
-        var cpos = Pos{ .row = 0, .col = 0 };
+        var pos = Pos{ .row = 0, .col = 0 };
 
         for (str) |c| {
             if (c == robot_tile) {
-                std.debug.print("Found robot at row {d} col {d}\n", .{ cpos.row, cpos.col });
-                return .{ .robot_pos = cpos };
+                std.debug.print("Found robot at row {d} col {d}\n", .{
+                    pos.row,
+                    pos.col,
+                });
+                return .{ .robot = pos };
             }
 
             switch (c) {
                 '\n' => {
-                    cpos.row += 1;
-                    cpos.col = 0;
+                    pos.row += 1;
+                    pos.col = 0;
                 },
-                else => cpos.col += 1,
+                else => pos.col += 1,
             }
         }
 
         return StateError.RobotNotFound;
     }
 
-    pub fn isRobotAt(self: *const State, row: usize, col: usize) bool {
-        return row == self.robot_pos.row and
-            col == self.robot_pos.col;
+    pub fn isRobotAt(self: *const State, pos: Pos) bool {
+        return pos.row == self.robot.row and
+            pos.col == self.robot.col;
     }
 
     pub fn robotPos(self: *const State) Pos {
-        return self.robot_pos;
+        return self.robot;
     }
 
     pub fn moveRobotTo(self: *State, pos: Pos) void {
-        self.robot_pos = pos;
+        self.robot = pos;
     }
 
     pub fn deinit(self: *const State) void {

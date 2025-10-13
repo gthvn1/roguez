@@ -43,11 +43,11 @@ pub const Game = struct {
         var board_iter = self.board.iter();
 
         while (board_iter.next()) |cell| {
-            if (cell.col == 0) {
+            if (cell.pos.col == 0) {
                 std.debug.print("\n", .{});
             }
 
-            if (self.state.isRobotAt(cell.row, cell.col)) {
+            if (self.state.isRobotAt(cell.pos)) {
                 std.debug.print("R ", .{});
             } else {
                 std.debug.print("{c} ", .{cell.tile.toChar()});
