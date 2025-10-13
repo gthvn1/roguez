@@ -5,12 +5,10 @@ pub fn main() !void {
     const GPAtype = std.heap.GeneralPurposeAllocator(.{});
     var gpa = GPAtype{};
     const allocator = gpa.allocator();
+    const map = @import("map.zig").map;
 
     // Prints to stderr, ignoring potential errors.
-    var g = try r.Game.create(
-        allocator,
-        r.board_sample[0..],
-    );
+    var g = try r.Game.create(allocator, map);
     defer g.destroy(allocator);
 
     while (true) {
