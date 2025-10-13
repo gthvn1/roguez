@@ -11,7 +11,6 @@ pub const State = struct {
     const robot_tile: u8 = '@';
 
     pub fn init(str: []const u8) !State {
-        // TODO: really find the row and col in the map or null if not found.
         var pos = Pos{ .row = 0, .col = 0 };
 
         for (str) |c| {
