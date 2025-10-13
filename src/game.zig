@@ -63,10 +63,22 @@ pub const Game = struct {
 
         const next_pos =
             switch (direction) {
-                Dir.Up => if (robot_pos.row > 0) Pos.init(robot_pos.row - 1, robot_pos.col) else null,
-                Dir.Down => Pos.init(robot_pos.row + 1, robot_pos.col),
-                Dir.Left => if (robot_pos.col > 0) Pos.init(robot_pos.row, robot_pos.col - 1) else null,
-                Dir.Right => Pos.init(robot_pos.row, robot_pos.col + 1),
+                Dir.Up => if (robot_pos.row > 0) Pos{
+                    .row = robot_pos.row - 1,
+                    .col = robot_pos.col,
+                } else null,
+                Dir.Down => Pos{
+                    .row = robot_pos.row + 1,
+                    .col = robot_pos.col,
+                },
+                Dir.Left => if (robot_pos.col > 0) Pos{
+                    .row = robot_pos.row,
+                    .col = robot_pos.col - 1,
+                } else null,
+                Dir.Right => Pos{
+                    .row = robot_pos.row,
+                    .col = robot_pos.col + 1,
+                },
             };
 
         if (next_pos == null) return false;

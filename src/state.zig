@@ -12,20 +12,20 @@ pub const State = struct {
 
     pub fn init(str: []const u8) !State {
         // TODO: really find the row and col in the map or null if not found.
-        var row: usize = 0;
-        var col: usize = 0;
+        var cpos = Pos{ .row = 0, .col = 0 };
 
         for (str) |c| {
             if (c == robot_tile) {
-                std.debug.print("Found robot at row {d} col {d}\n", .{ row, col });
-                return .{ .robot_pos = Pos.init(row, col) };
+                std.debug.print("Found robot at row {d} col {d}\n", .{ cpos.row, cpos.col });
+                return .{ .robot_pos = cpos };
             }
 
-            if (c == '\n') {
-                row += 1;
-                col = 0;
-            } else {
-                col += 1;
+            switch (c) {
+                '\n' => {
+                    cpos.row += 1;
+                    cpos.col = 0;
+                },
+                else => cpos.col += 1,
             }
         }
 
