@@ -27,7 +27,7 @@ pub const Game = struct {
 
     pub fn create(allocator: std.mem.Allocator, str: []const u8) !Game {
         const board = try Board.create(allocator, str);
-        const state = try State.init(str);
+        const state = try State.create(allocator, str);
         return .{
             .board = board,
             .state = state,
@@ -36,7 +36,7 @@ pub const Game = struct {
 
     pub fn destroy(self: *Game, allocator: std.mem.Allocator) void {
         self.board.destroy(allocator);
-        self.state.deinit();
+        self.state.destroy();
     }
 
     pub fn print(self: *const Game) void {
@@ -47,8 +47,8 @@ pub const Game = struct {
                 std.debug.print("\n", .{});
             }
 
-            if (self.state.isRobotAt(cell.pos)) {
-                std.debug.print("R ", .{});
+            if (self.state.getItemAt(cell.pos)) |item| {
+                std.debug.print("{c} ", .{item.toChar()});
             } else {
                 std.debug.print("{c} ", .{cell.tile.toChar()});
             }
@@ -56,7 +56,7 @@ pub const Game = struct {
         std.debug.print("\n\n", .{});
     }
 
-    pub fn moveRobot(self: *Game, direction: Dir) bool {
+    pub fn moveRobot(self: *Game, direction: Dir) !bool {
         const robot_pos = self.state.robotPos();
 
         std.debug.print("Robot is at {d}x{d}\n", .{ robot_pos.row, robot_pos.col });
@@ -86,7 +86,7 @@ pub const Game = struct {
 
         // Before moving we need to check if we will hit a wall
         if (self.board.cellIsFloor(new_pos)) {
-            self.state.moveRobotTo(new_pos);
+            try self.state.moveRobotTo(new_pos);
         } else {
             std.debug.print("Oops, you hit a wall...\n", .{});
         }
