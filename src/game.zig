@@ -59,7 +59,7 @@ pub const Game = struct {
         std.debug.print("\n\n", .{});
     }
 
-    pub fn moveRobot(self: *Game, direction: Dir) !bool {
+    pub fn moveRobot(self: *Game, direction: Dir) !void {
         const robot_pos = self.state.robotPos();
 
         const next_pos =
@@ -82,38 +82,26 @@ pub const Game = struct {
                 },
             };
 
-        if (next_pos == null) return false;
+        if (next_pos == null) return;
         const new_pos = next_pos.?;
 
         // Before moving we need to check if we will hit a wall
-        if (self.board.cellIsFloor(new_pos)) {
-            // And if there is already an item there
-            if (self.state.getItemAt(new_pos)) |_| {
-                std.debug.print("TODO: You hit something!!! what is this ???\n", .{});
-            } else {
-                try self.state.moveRobotTo(new_pos);
-            }
-        } else {
-            std.debug.print("Oops, you hit a wall...\n", .{});
+        switch (self.board.getTileAt(new_pos)) {
+            .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
+            .door => std.debug.print("There is a door here\n", .{}),
+            else => {
+                // is there already an item there?
+                if (self.state.getItemAt(new_pos)) |_| {
+                    std.debug.print("TODO: You hit something!!! what is this ???\n", .{});
+                } else {
+                    try self.state.moveRobotTo(new_pos);
+                }
+            },
         }
-        return false;
     }
 };
 
 pub fn readChar() u8 {
-    // We need to set the terminal in Raw mode to avoid pressing enter
-    // TODO:
-    //   - Should we restore the old_settings?
-    //   - Can we avoid doing this each time readChar is called?
-    var settings: std.os.linux.termios = undefined;
-    _ = std.os.linux.tcgetattr(0, &settings);
-
-    // Disabling canonical mode allow the input to be immediatly available
-    settings.lflag.ICANON = false;
-
-    _ = std.os.linux.tcsetattr(0, std.posix.TCSA.NOW, &settings);
-
-    // we can now read character without pressing enter
     var stdin_buffer: [1]u8 = undefined;
     var stdin_reader = std.fs.File.stdin().reader(&stdin_buffer);
     const stdin = &stdin_reader.interface;

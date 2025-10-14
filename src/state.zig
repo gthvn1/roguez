@@ -12,13 +12,11 @@ const ItemError = error{
 
 const Item = union(enum) {
     key: u8,
-    door: u8,
     box,
     robot,
 
     pub fn fromChar(c: u8) !Item {
         return switch (c) {
-            'A'...'Z' => .{ .door = c },
             'a'...'z' => .{ .key = c },
             '&' => .box,
             '@' => .robot,
@@ -33,7 +31,6 @@ const Item = union(enum) {
 
         switch (self) {
             .key => |k| std.mem.copyForwards(u8, buf, &[_]u8{ k, 0, 0, 0 }),
-            .door => |d| std.mem.copyForwards(u8, buf, &[_]u8{ d, 0, 0, 0 }),
             .box => std.mem.copyForwards(u8, buf, box),
             .robot => std.mem.copyForwards(u8, buf, robot),
         }
@@ -70,7 +67,6 @@ pub const State = struct {
                         try items.put(pos, .robot);
                     }
                 },
-                'A'...'Z' => try items.put(pos, .{ .door = c }),
                 'a'...'z' => try items.put(pos, .{ .key = c }),
                 '&' => try items.put(pos, .box),
                 else => {},

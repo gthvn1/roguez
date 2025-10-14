@@ -1,13 +1,15 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
 
-const Tile = enum {
+const Tile = union(enum) {
     wall,
     floor,
+    door: u8,
 
     pub fn fromChar(c: u8) Tile {
         return switch (c) {
             '#' => .wall,
+            'A'...'Z' => .{ .door = c },
             else => .floor,
         };
     }
@@ -19,6 +21,7 @@ const Tile = enum {
         switch (self) {
             .wall => std.mem.copyForwards(u8, buf, wall),
             .floor => std.mem.copyForwards(u8, buf, &[_]u8{ 0x20, 0, 0, 0 }),
+            .door => |d| std.mem.copyForwards(u8, buf, &[_]u8{ d, 0, 0, 0 }),
         }
 
         return buf;
@@ -93,8 +96,8 @@ pub const Board = struct {
         allocator.free(self.b);
     }
 
-    pub fn cellIsFloor(self: *Board, pos: Pos) bool {
-        return self.b[pos.row][pos.col] == Tile.floor;
+    pub fn getTileAt(self: *Board, pos: Pos) Tile {
+        return self.b[pos.row][pos.col];
     }
 
     pub fn iter(self: *const Board) BoardIterator {
