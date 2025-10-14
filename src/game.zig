@@ -59,8 +59,6 @@ pub const Game = struct {
     pub fn moveRobot(self: *Game, direction: Dir) !bool {
         const robot_pos = self.state.robotPos();
 
-        std.debug.print("Robot is at {d}x{d}\n", .{ robot_pos.row, robot_pos.col });
-
         const next_pos =
             switch (direction) {
                 Dir.Up => if (robot_pos.row > 0) Pos{

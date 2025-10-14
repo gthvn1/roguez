@@ -56,11 +56,6 @@ pub const State = struct {
         for (str) |c| {
             switch (c) {
                 '@' => {
-                    std.debug.print("Found a robot at {d}x{d}\n", .{
-                        pos.row,
-                        pos.col,
-                    });
-
                     if (robot_pos) |p| {
                         std.debug.print("Already found a robot at {d}x{d}\n", .{ p.row, p.col });
                         return StateError.DuplicatedRobot;
@@ -69,27 +64,9 @@ pub const State = struct {
                         try items.put(pos, .robot);
                     }
                 },
-                'A'...'Z' => {
-                    std.debug.print("Found a door at {d}x{d}\n", .{
-                        pos.row,
-                        pos.col,
-                    });
-                    try items.put(pos, .{ .door = c });
-                },
-                'a'...'z' => {
-                    std.debug.print("Found a key at {d}x{d}\n", .{
-                        pos.row,
-                        pos.col,
-                    });
-                    try items.put(pos, .{ .key = c });
-                },
-                '&' => {
-                    std.debug.print("Found a box at row {d}x{d}\n", .{
-                        pos.row,
-                        pos.col,
-                    });
-                    try items.put(pos, .box);
-                },
+                'A'...'Z' => try items.put(pos, .{ .door = c }),
+                'a'...'z' => try items.put(pos, .{ .key = c }),
+                '&' => try items.put(pos, .box),
                 else => {},
             }
 
@@ -100,6 +77,17 @@ pub const State = struct {
                 },
                 else => pos.col += 1,
             }
+        }
+
+        // Before returning we print the items found all along the way
+        var iter = items.iterator();
+
+        while (iter.next()) |item| {
+            std.debug.print("Found {c} at {d}x{d}\n", .{
+                item.value_ptr.toChar(),
+                item.key_ptr.row,
+                item.key_ptr.col,
+            });
         }
 
         return State{
@@ -120,19 +108,12 @@ pub const State = struct {
     }
 
     pub fn moveRobotTo(self: *State, pos: Pos) !void {
-        if (self.items.get(self.robot.pos)) |item| {
-            switch (item) {
-                .robot => {
-                    _ = self.items.remove(self.robot.pos);
-                    try self.items.put(pos, .robot);
-                    self.robot.pos = pos;
-                },
-                else => std.debug.print("TODO: you are trying to move to a place that is alread occupied\n", .{}),
-            }
-        } else {
-            // Something goes wrong
-            unreachable;
-        }
+        // Verifications should be done as the game logic, not here
+        std.debug.print("robot moves from {d}x{d} to ", .{ self.robot.pos.row, self.robot.pos.col });
+        _ = self.items.remove(self.robot.pos);
+        try self.items.put(pos, .robot);
+        self.robot.pos = pos;
+        std.debug.print("{d}x{d}\n", .{ self.robot.pos.row, self.robot.pos.col });
     }
 
     pub fn destroy(self: *State) void {
