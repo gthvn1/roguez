@@ -47,6 +47,8 @@ pub const Game = struct {
                 std.debug.print("\n", .{});
             }
 
+            // If we have an item at the given position print it, otherwise
+            // print the tile.
             if (self.state.getItemAt(cell.pos)) |item| {
                 std.debug.print("{c} ", .{item.toChar()});
             } else {

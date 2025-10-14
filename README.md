@@ -1,7 +1,7 @@
 # RogueZ
 
 - A simple roguelike game written in Zig
-- Tested with Zig 0.15.1
+- Tested with Zig 0.15.2
 - Run with: `zig build run`
 
 # Files
