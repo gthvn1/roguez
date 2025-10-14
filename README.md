@@ -21,3 +21,6 @@
 - [ ] Add interactive/moving objects
 - [x] Move robot around an empty map
 - [x] Create and display a board
+
+# Screenshots
+![First steps](screenshot.png "first steps")
