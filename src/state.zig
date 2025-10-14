@@ -26,13 +26,19 @@ const Item = union(enum) {
         };
     }
 
-    pub fn toChar(self: Item) u8 {
-        return switch (self) {
-            .key => |k| k,
-            .door => |d| d,
-            .box => '&',
-            .robot => '@',
-        };
+    pub fn toChar(self: Item, buf: *[4]u8) *[4]u8 {
+        // https://symbl.cc/en/unicode-table
+        const robot = "\u{26D1}";
+        const box = "\u{26C1}";
+
+        switch (self) {
+            .key => |k| std.mem.copyForwards(u8, buf, &[_]u8{ k, 0, 0, 0 }),
+            .door => |d| std.mem.copyForwards(u8, buf, &[_]u8{ d, 0, 0, 0 }),
+            .box => std.mem.copyForwards(u8, buf, box),
+            .robot => std.mem.copyForwards(u8, buf, robot),
+        }
+
+        return buf;
     }
 };
 
@@ -81,10 +87,11 @@ pub const State = struct {
 
         // Before returning we print the items found all along the way
         var iter = items.iterator();
+        var buf: [4]u8 = undefined;
 
         while (iter.next()) |item| {
-            std.debug.print("Found {c} at {d}x{d}\n", .{
-                item.value_ptr.toChar(),
+            std.debug.print("Found {s} at {d}x{d}\n", .{
+                item.value_ptr.toChar(&buf),
                 item.key_ptr.row,
                 item.key_ptr.col,
             });

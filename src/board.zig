@@ -2,21 +2,26 @@ const std = @import("std");
 const Pos = @import("pos.zig").Pos;
 
 const Tile = enum {
-    Wall,
-    Floor,
+    wall,
+    floor,
 
     pub fn fromChar(c: u8) Tile {
         return switch (c) {
-            '#' => .Wall,
-            else => .Floor,
+            '#' => .wall,
+            else => .floor,
         };
     }
 
-    pub fn toChar(self: Tile) u8 {
-        return switch (self) {
-            .Wall => '#',
-            .Floor => ' ',
-        };
+    pub fn toChar(self: Tile, buf: *[4]u8) *[4]u8 {
+        // https://symbl.cc/en/unicode-table
+        const wall = "\u{25A0}";
+
+        switch (self) {
+            .wall => std.mem.copyForwards(u8, buf, wall),
+            .floor => std.mem.copyForwards(u8, buf, &[_]u8{ 0x20, 0, 0, 0 }),
+        }
+
+        return buf;
     }
 };
 
@@ -89,7 +94,7 @@ pub const Board = struct {
     }
 
     pub fn cellIsFloor(self: *Board, pos: Pos) bool {
-        return self.b[pos.row][pos.col] == Tile.Floor;
+        return self.b[pos.row][pos.col] == Tile.floor;
     }
 
     pub fn iter(self: *const Board) BoardIterator {

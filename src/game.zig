@@ -10,10 +10,10 @@ const State = @import("state.zig").State;
 const Pos = @import("pos.zig").Pos;
 
 pub const Dir = enum {
-    Up,
-    Down,
-    Left,
-    Right,
+    up,
+    down,
+    left,
+    right,
 };
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
@@ -41,6 +41,7 @@ pub const Game = struct {
 
     pub fn print(self: *const Game) void {
         var board_iter = self.board.iter();
+        var buf: [4]u8 = undefined;
 
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {
@@ -50,9 +51,9 @@ pub const Game = struct {
             // If we have an item at the given position print it, otherwise
             // print the tile.
             if (self.state.getItemAt(cell.pos)) |item| {
-                std.debug.print("{c} ", .{item.toChar()});
+                std.debug.print("{s} ", .{item.toChar(&buf)});
             } else {
-                std.debug.print("{c} ", .{cell.tile.toChar()});
+                std.debug.print("{s} ", .{cell.tile.toChar(&buf)});
             }
         }
         std.debug.print("\n\n", .{});
@@ -63,19 +64,19 @@ pub const Game = struct {
 
         const next_pos =
             switch (direction) {
-                Dir.Up => if (robot_pos.row > 0) Pos{
+                Dir.up => if (robot_pos.row > 0) Pos{
                     .row = robot_pos.row - 1,
                     .col = robot_pos.col,
                 } else null,
-                Dir.Down => Pos{
+                Dir.down => Pos{
                     .row = robot_pos.row + 1,
                     .col = robot_pos.col,
                 },
-                Dir.Left => if (robot_pos.col > 0) Pos{
+                Dir.left => if (robot_pos.col > 0) Pos{
                     .row = robot_pos.row,
                     .col = robot_pos.col - 1,
                 } else null,
-                Dir.Right => Pos{
+                Dir.right => Pos{
                     .row = robot_pos.row,
                     .col = robot_pos.col + 1,
                 },

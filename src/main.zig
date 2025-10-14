@@ -21,10 +21,10 @@ pub fn main() !void {
         std.debug.print(" 'l' to move right\n", .{});
         std.debug.print(" You can use arrows to move\n", .{});
         switch (r.readChar()) {
-            'h', 0x44 => _ = try g.moveRobot(r.Dir.Left),
-            'j', 0x42 => _ = try g.moveRobot(r.Dir.Down),
-            'k', 0x41 => _ = try g.moveRobot(r.Dir.Up),
-            'l', 0x43 => _ = try g.moveRobot(r.Dir.Right),
+            'h', 0x44 => _ = try g.moveRobot(r.Dir.left),
+            'j', 0x42 => _ = try g.moveRobot(r.Dir.down),
+            'k', 0x41 => _ = try g.moveRobot(r.Dir.up),
+            'l', 0x43 => _ = try g.moveRobot(r.Dir.right),
             'q' => break,
             else => continue,
         }
