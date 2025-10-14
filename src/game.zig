@@ -86,7 +86,12 @@ pub const Game = struct {
 
         // Before moving we need to check if we will hit a wall
         if (self.board.cellIsFloor(new_pos)) {
-            try self.state.moveRobotTo(new_pos);
+            // And if there is already an item there
+            if (self.state.getItemAt(new_pos)) |_| {
+                std.debug.print("TODO: You hit something!!! what is this ???\n", .{});
+            } else {
+                try self.state.moveRobotTo(new_pos);
+            }
         } else {
             std.debug.print("Oops, you hit a wall...\n", .{});
         }

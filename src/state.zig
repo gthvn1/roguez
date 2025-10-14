@@ -108,7 +108,7 @@ pub const State = struct {
     }
 
     pub fn moveRobotTo(self: *State, pos: Pos) !void {
-        // Verifications should be done as the game logic, not here
+        // Verifications are be done by the game logic, not here
         std.debug.print("robot moves from {d}x{d} to ", .{ self.robot.pos.row, self.robot.pos.col });
         _ = self.items.remove(self.robot.pos);
         try self.items.put(pos, .robot);
