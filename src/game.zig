@@ -86,11 +86,12 @@ pub const Game = struct {
         if (next_pos == null) return;
         const new_pos = next_pos.?;
 
-        // Before moving we need to check if we will hit a wall
+        // Before moving we need to check if we will hit something
         switch (self.board.getTileAt(new_pos)) {
             .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
-            .door => std.debug.print("There is a door here\n", .{}),
-            else => {
+            .door => std.debug.print("TODO: There is a door here\n", .{}),
+            .flag => std.debug.print("TODO: You find the flag\n", .{}),
+            .floor => {
                 // is there already an item there?
                 if (self.state.getItemAt(new_pos)) |item| {
                     self.handleItemAt(item, new_pos);
