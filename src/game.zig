@@ -8,6 +8,7 @@ pub const board_sample = @import("board.zig").sample;
 const Board = @import("board.zig").Board;
 const State = @import("state.zig").State;
 const Pos = @import("pos.zig").Pos;
+const Item = @import("item.zig").Item;
 
 pub const Dir = enum {
     up,
@@ -91,12 +92,22 @@ pub const Game = struct {
             .door => std.debug.print("There is a door here\n", .{}),
             else => {
                 // is there already an item there?
-                if (self.state.getItemAt(new_pos)) |_| {
-                    std.debug.print("TODO: You hit something!!! what is this ???\n", .{});
+                if (self.state.getItemAt(new_pos)) |item| {
+                    self.handleItemAt(item, new_pos);
                 } else {
                     try self.state.moveRobotTo(new_pos);
                 }
             },
+        }
+    }
+
+    fn handleItemAt(self: *Game, item: Item, pos: Pos) void {
+        _ = self;
+        _ = pos;
+        switch (item) {
+            .robot => unreachable,
+            .box => std.debug.print("TODO: You hit a box, you can't move there...\n", .{}),
+            .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
         }
     }
 };

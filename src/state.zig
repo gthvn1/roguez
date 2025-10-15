@@ -1,46 +1,10 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
+const Item = @import("item.zig").Item;
 
 const StateError = error{
     RobotNotFound,
     DuplicatedRobot,
-};
-
-const ItemError = error{
-    UnknownItem,
-};
-
-const Item = union(enum) {
-    key: u8,
-    box,
-    robot,
-
-    pub fn fromChar(c: u8) !Item {
-        return switch (c) {
-            'a'...'z' => .{ .key = c },
-            '&' => .box,
-            '@' => .robot,
-            else => ItemError.UnknownItem,
-        };
-    }
-
-    pub fn toChar(self: Item, buf: *[5]u8) *[5]u8 {
-        // https://symbl.cc/en/unicode-table
-        // Unicode requires at most 4 bytes for encoding. So to have a null
-        // terminated string we need 5 bytes.
-        const robot = "\u{26D1}";
-        const box = "\u{26C1}";
-
-        std.mem.copyForwards(u8, buf, &[_]u8{ 0, 0, 0, 0, 0 });
-
-        switch (self) {
-            .key => |k| buf[0] = k,
-            .box => std.mem.copyForwards(u8, buf, box),
-            .robot => std.mem.copyForwards(u8, buf, robot),
-        }
-
-        return buf;
-    }
 };
 
 const Robot = struct {
