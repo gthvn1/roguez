@@ -41,7 +41,7 @@ pub const Game = struct {
 
     pub fn print(self: *const Game) void {
         var board_iter = self.board.iter();
-        var buf: [4]u8 = undefined;
+        var buf: [5]u8 = undefined;
 
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {

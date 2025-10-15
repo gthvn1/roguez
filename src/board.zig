@@ -4,24 +4,30 @@ const Pos = @import("pos.zig").Pos;
 const Tile = union(enum) {
     wall,
     floor,
+    flag,
     door: u8,
 
     pub fn fromChar(c: u8) Tile {
         return switch (c) {
             '#' => .wall,
+            '$' => .flag,
             'A'...'Z' => .{ .door = c },
             else => .floor,
         };
     }
 
-    pub fn toChar(self: Tile, buf: *[4]u8) *[4]u8 {
+    pub fn toChar(self: Tile, buf: *[5]u8) *[5]u8 {
         // https://symbl.cc/en/unicode-table
         const wall = "\u{25A0}";
+        const flag = "\u{2691}";
+
+        std.mem.copyForwards(u8, buf, &[_]u8{ 0, 0, 0, 0, 0 });
 
         switch (self) {
             .wall => std.mem.copyForwards(u8, buf, wall),
-            .floor => std.mem.copyForwards(u8, buf, &[_]u8{ 0x20, 0, 0, 0 }),
-            .door => |d| std.mem.copyForwards(u8, buf, &[_]u8{ d, 0, 0, 0 }),
+            .flag => std.mem.copyForwards(u8, buf, flag),
+            .floor => buf[0] = 0x20,
+            .door => |d| buf[0] = d,
         }
 
         return buf;
