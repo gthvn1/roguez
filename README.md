@@ -1,15 +1,26 @@
 # RogueZ
 
-- A simple roguelike game written in Zig
+A simple roguelike game written in Zig.
+
 - Tested with Zig 0.15.2
 - Run with: `zig build run`
 
-# Files
+## Files
 
-- `src/main.zig`: entry point and game loop.
-- `src/game.zig`: core game logic (collisions, movement, viewport, ...).
-- `src/board.zig`: static part of the world (walls, floors, doors, ...).
-- `src/state.zig`: dynamic parts (robot positions, enemies, ...).
+### Entry point
+- `src/main.zig`: entry point and game loop
+
+### Core game logic
+- `src/board.zig`: static parts of the world (walls, floors, flag, ...) called *tiles*
+- `src/game.zig`: core game logic (collisions, movement, viewport, ...)
+- `src/state.zig`: dynamic elements (robot, boxes, keys, doors, ...) called *items*
+
+### Supported structures
+- `src/item.zig`: an element of the state
+- `src/map.zig`: contains the map as a string
+- `src/pos.zig`: is the position of an object on the board (*row x col*)
+
+*Note: "tiles" are static parts of the world that cannot be interacted with. "Items" are objects that can move or be interacted with, even if they don't move.*
 
 # Roadmap
 

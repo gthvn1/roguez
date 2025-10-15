@@ -6,12 +6,14 @@ const ItemError = error{
 
 pub const Item = union(enum) {
     key: u8,
+    door: u8,
     box,
     robot,
 
     pub fn fromChar(c: u8) !Item {
         return switch (c) {
             'a'...'z' => .{ .key = c },
+            'A'...'Z' => .{ .door = c },
             '&' => .box,
             '@' => .robot,
             else => ItemError.UnknownItem,
@@ -29,6 +31,7 @@ pub const Item = union(enum) {
 
         switch (self) {
             .key => |k| buf[0] = k,
+            .door => |d| buf[0] = d,
             .box => std.mem.copyForwards(u8, buf, box),
             .robot => std.mem.copyForwards(u8, buf, robot),
         }

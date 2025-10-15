@@ -1,17 +1,15 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
 
-const Tile = union(enum) {
+const Tile = enum {
     wall,
     floor,
     flag,
-    door: u8,
 
     pub fn fromChar(c: u8) Tile {
         return switch (c) {
             '#' => .wall,
             '$' => .flag,
-            'A'...'Z' => .{ .door = c },
             else => .floor,
         };
     }
@@ -27,7 +25,6 @@ const Tile = union(enum) {
             .wall => std.mem.copyForwards(u8, buf, wall),
             .flag => std.mem.copyForwards(u8, buf, flag),
             .floor => buf[0] = 0x20,
-            .door => |d| buf[0] = d,
         }
 
         return buf;

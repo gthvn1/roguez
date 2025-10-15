@@ -89,7 +89,6 @@ pub const Game = struct {
         // Before moving we need to check if we will hit something
         switch (self.board.getTileAt(new_pos)) {
             .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
-            .door => std.debug.print("TODO: There is a door here\n", .{}),
             .flag => std.debug.print("TODO: You find the flag\n", .{}),
             .floor => {
                 // is there already an item there?
@@ -109,6 +108,7 @@ pub const Game = struct {
             .robot => unreachable,
             .box => std.debug.print("TODO: You hit a box, you can't move there...\n", .{}),
             .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
+            .door => std.debug.print("TODO: There is a door here\n", .{}),
         }
     }
 };

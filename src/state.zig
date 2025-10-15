@@ -36,6 +36,7 @@ pub const State = struct {
                     }
                 },
                 'a'...'z' => try items.put(pos, .{ .key = c }),
+                'A'...'Z' => try items.put(pos, .{ .door = c }),
                 '&' => try items.put(pos, .box),
                 else => {},
             }
@@ -53,8 +54,9 @@ pub const State = struct {
         var iter = items.iterator();
         var buf: [5]u8 = undefined;
 
+        std.debug.print("List of items found:\n", .{});
         while (iter.next()) |item| {
-            std.debug.print("Found {s} at {d}x{d}\n", .{
+            std.debug.print("  - {s} at {d}x{d}\n", .{
                 item.value_ptr.toChar(&buf),
                 item.key_ptr.row,
                 item.key_ptr.col,
