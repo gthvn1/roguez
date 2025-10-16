@@ -96,13 +96,25 @@ pub const Game = struct {
     /// [handleItemAt] takes care of moving it. If the item cannot be moved
     /// it returns false, otherwise true.
     fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) bool {
-        switch (item) {
+        return switch (item) {
             .robot => unreachable,
-            .box => return self.handleBox(pos, dir),
-            .key => |k| std.debug.print("TODO: You hit {c} key...\n", .{k}),
-            .door => |d| std.debug.print("TODO: You need key {c} to open the door\n", .{d}),
-        }
+            .box => self.handleBox(pos, dir),
+            .key => |k| self.handleKey(pos, k),
+            .door => |d| self.handleDoor(pos, d),
+        };
+    }
 
+    fn handleDoor(self: *Game, pos: Pos, door: u8) bool {
+        _ = self;
+        _ = pos;
+        std.debug.print("TODO: You need key {c} to open the door\n", .{door});
+        return false;
+    }
+
+    fn handleKey(self: *Game, pos: Pos, key: u8) bool {
+        _ = self;
+        _ = pos;
+        std.debug.print("TODO: You hit {c} key...\n", .{key});
         return false;
     }
 
