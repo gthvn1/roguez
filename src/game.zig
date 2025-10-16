@@ -66,11 +66,6 @@ pub const Game = struct {
                 if (self.state.getItemAt(next_pos)) |item| {
                     if (self.handleItemAt(item, next_pos, direction)) {
                         try self.state.moveRobotTo(next_pos);
-                    } else {
-                        var buf: [5]u8 = undefined;
-                        std.debug.print("Hit {s} that cannot be moved in that direction\n", .{item.toUtf8(
-                            &buf,
-                        )});
                     }
                 } else {
                     try self.state.moveRobotTo(next_pos);
@@ -86,8 +81,8 @@ pub const Game = struct {
         switch (item) {
             .robot => unreachable,
             .box => return self.handleBox(pos, dir),
-            .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
-            .door => std.debug.print("TODO: There is a closed door here\n", .{}),
+            .key => |k| std.debug.print("TODO: You hit {c} key...\n", .{k}),
+            .door => |d| std.debug.print("TODO: You need key {c} to open the door\n", .{d}),
         }
 
         return false;
