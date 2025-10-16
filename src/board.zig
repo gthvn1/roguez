@@ -1,7 +1,7 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
 
-const Tile = enum {
+pub const Tile = enum {
     wall,
     floor,
     flag,
@@ -31,7 +31,7 @@ const Tile = enum {
     }
 };
 
-const Cell = struct {
+const BoardCell = struct {
     tile: Tile,
     pos: Pos,
 };
@@ -40,14 +40,14 @@ const BoardIterator = struct {
     board: *const Board,
     pos: Pos,
 
-    pub fn next(it: *BoardIterator) ?Cell {
+    pub fn next(it: *BoardIterator) ?BoardCell {
         if (it.pos.row >= it.board.b.len) return null;
 
         const raw_col = it.board.b[it.pos.row];
 
         if (it.pos.col >= raw_col.len) return null;
 
-        const cell = Cell{
+        const cell = BoardCell{
             .pos = it.pos,
             .tile = raw_col[it.pos.col],
         };

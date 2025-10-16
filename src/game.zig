@@ -6,10 +6,13 @@ pub const board_sample = @import("board.zig").sample;
 
 // Import submodules
 const Board = @import("board.zig").Board;
+const Tile = @import("board.zig").Tile;
+
 const State = @import("state.zig").State;
+const Item = @import("state.zig").Item;
+
 const Pos = @import("pos.zig").Pos;
 pub const Dir = @import("pos.zig").Dir;
-const Item = @import("item.zig").Item;
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the robot (@) and futur robots, boxes, traps... will be
@@ -19,6 +22,18 @@ const Item = @import("item.zig").Item;
 pub const Game = struct {
     board: Board,
     state: State,
+
+    const GameCell = struct {
+        tile: Tile, // Tile is from board
+        item: ?Item,
+    };
+
+    fn getCellAt(self: *Game, pos: Pos) GameCell {
+        return .{
+            .tile = self.board.getTileAt(pos),
+            .item = self.state.getItemAt(pos),
+        };
+    }
 
     pub fn create(allocator: std.mem.Allocator, str: []const u8) !Game {
         const board = try Board.create(allocator, str);
@@ -56,17 +71,20 @@ pub const Game = struct {
 
     pub fn moveRobot(self: *Game, direction: Dir) !void {
         const next_pos = self.state.robotPos().next(direction) orelse return;
+        const next_cell = self.getCellAt(next_pos);
 
         // Before moving we need to check if we will hit something
-        switch (self.board.getTileAt(next_pos)) {
+        switch (next_cell.tile) {
             .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
             .flag => std.debug.print("TODO: You find the flag\n", .{}),
             .floor => {
-                // is there already an item there?
-                if (self.state.getItemAt(next_pos)) |item| {
+                if (next_cell.item) |item| {
                     if (self.handleItemAt(item, next_pos, direction)) {
                         try self.state.moveRobotTo(next_pos);
                     }
+                    // If we failed to handle item (typically we cannot move it) then
+                    // we do nothing. The reason it failed should be reported by the
+                    // item handler.
                 } else {
                     try self.state.moveRobotTo(next_pos);
                 }
@@ -92,21 +110,19 @@ pub const Game = struct {
     /// returns true. Otherwise returns false.
     fn handleBox(self: *Game, pos: Pos, dir: Dir) bool {
         const next_pos = pos.next(dir) orelse return false;
-        switch (self.board.getTileAt(next_pos)) {
+        const next_cell = self.getCellAt(next_pos);
+
+        switch (next_cell.tile) {
             .floor => {
-                if (self.state.getItemAt(next_pos)) |_| {
+                if (next_cell.item) |_| {
                     std.debug.print("TODO: An item blocks the path\n", .{});
                     return false;
                 }
                 self.state.moveBox(pos, next_pos) catch return false;
                 return true;
             },
-            .wall => {
-                std.debug.print("A wall is in the path\n", .{});
-            },
-            .flag => {
-                std.debug.print("TODO: You catch the flag no?...\n", .{});
-            },
+            .wall => std.debug.print("A wall blocks our path!\n", .{}),
+            .flag => std.debug.print("TODO: You catch the flag no?...\n", .{}),
         }
 
         return false;
