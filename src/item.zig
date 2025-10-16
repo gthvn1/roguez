@@ -20,7 +20,7 @@ pub const Item = union(enum) {
         };
     }
 
-    pub fn toChar(self: Item, buf: *[5]u8) *[5]u8 {
+    pub fn toUtf8(self: Item, buf: *[5]u8) *[5]u8 {
         // https://symbl.cc/en/unicode-table
         // Unicode requires at most 4 bytes for encoding. So to have a null
         // terminated string we need 5 bytes.

@@ -52,9 +52,9 @@ pub const Game = struct {
             // If we have an item at the given position print it, otherwise
             // print the tile.
             if (self.state.getItemAt(cell.pos)) |item| {
-                std.debug.print("{s} ", .{item.toChar(&buf)});
+                std.debug.print("{s} ", .{item.toUtf8(&buf)});
             } else {
-                std.debug.print("{s} ", .{cell.tile.toChar(&buf)});
+                std.debug.print("{s} ", .{cell.tile.toUtf8(&buf)});
             }
         }
         std.debug.print("\n\n", .{});
@@ -97,7 +97,7 @@ pub const Game = struct {
                         try self.state.moveRobotTo(new_pos);
                     } else {
                         var buf: [5]u8 = undefined;
-                        std.debug.print("Robot hit {s} that cannot be moved in that direction\n", .{item.toChar(
+                        std.debug.print("Robot hit {s} that cannot be moved in that direction\n", .{item.toUtf8(
                             &buf,
                         )});
                     }

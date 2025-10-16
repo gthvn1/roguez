@@ -14,7 +14,7 @@ const Tile = enum {
         };
     }
 
-    pub fn toChar(self: Tile, buf: *[5]u8) *[5]u8 {
+    pub fn toUtf8(self: Tile, buf: *[5]u8) *[5]u8 {
         // https://symbl.cc/en/unicode-table
         const wall = "\u{25A0}";
         const flag = "\u{2691}";

@@ -57,7 +57,7 @@ pub const State = struct {
         std.debug.print("List of items found:\n", .{});
         while (iter.next()) |item| {
             std.debug.print("  - {s} at {d}x{d}\n", .{
-                item.value_ptr.toChar(&buf),
+                item.value_ptr.toUtf8(&buf),
                 item.key_ptr.row,
                 item.key_ptr.col,
             });
