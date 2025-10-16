@@ -46,6 +46,31 @@ const Robot = struct {
 
     pos: Pos,
     items: [max_items]?Item,
+
+    pub fn items_iterator(self: *const Robot) Iterator {
+        return Iterator{
+            .robot = self,
+            .index = 0,
+        };
+    }
+
+    const Iterator = struct {
+        robot: *const Robot,
+        index: usize,
+
+        pub fn next(self: *Iterator) ?Item {
+            while (self.index < max_items) {
+                const current_item = self.robot.items[self.index];
+                self.index += 1;
+
+                if (current_item) |item| {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+    };
 };
 
 const StateError = error{
@@ -93,7 +118,7 @@ pub const State = struct {
         var iter = items.iterator();
         var buf: [5]u8 = undefined;
 
-        std.debug.print("List of items found:\n", .{});
+        std.debug.print("==== List of items found ==== \n", .{});
         while (iter.next()) |item| {
             std.debug.print("  - {s} at {d}x{d}\n", .{
                 item.value_ptr.toUtf8(&buf),

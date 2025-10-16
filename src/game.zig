@@ -50,6 +50,16 @@ pub const Game = struct {
     }
 
     pub fn print(self: *const Game) void {
+        std.debug.print("\n==== Robot items ====\n", .{});
+        var it = self.state.robot.items_iterator();
+        while (it.next()) |i| {
+            switch (i) {
+                .key => |k| std.debug.print("<{c}> ", .{k}),
+                else => unreachable,
+            }
+        }
+        std.debug.print("\n==== Board ====\n", .{});
+
         var board_iter = self.board.iter();
         var buf: [5]u8 = undefined;
 
@@ -66,6 +76,7 @@ pub const Game = struct {
                 std.debug.print("{s} ", .{cell.tile.toUtf8(&buf)});
             }
         }
+
         std.debug.print("\n\n", .{});
     }
 

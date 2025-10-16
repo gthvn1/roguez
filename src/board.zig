@@ -31,39 +31,6 @@ pub const Tile = enum {
     }
 };
 
-const BoardCell = struct {
-    tile: Tile,
-    pos: Pos,
-};
-
-const BoardIterator = struct {
-    board: *const Board,
-    pos: Pos,
-
-    pub fn next(it: *BoardIterator) ?BoardCell {
-        if (it.pos.row >= it.board.b.len) return null;
-
-        const raw_col = it.board.b[it.pos.row];
-
-        if (it.pos.col >= raw_col.len) return null;
-
-        const cell = BoardCell{
-            .pos = it.pos,
-            .tile = raw_col[it.pos.col],
-        };
-
-        // advance iterator
-        it.pos.col += 1;
-        // and check if we reached the end of a row
-        if (it.pos.col == raw_col.len) {
-            it.pos.row += 1;
-            it.pos.col = 0;
-        }
-
-        return cell;
-    }
-};
-
 pub const Board = struct {
     b: [][]Tile,
 
@@ -103,10 +70,43 @@ pub const Board = struct {
         return self.b[pos.row][pos.col];
     }
 
-    pub fn iter(self: *const Board) BoardIterator {
+    pub fn iter(self: *const Board) Iterator {
         return .{
             .board = self,
             .pos = .{ .row = 0, .col = 0 },
         };
     }
+
+    const Iterator = struct {
+        board: *const Board,
+        pos: Pos,
+
+        const BoardCell = struct {
+            tile: Tile,
+            pos: Pos,
+        };
+
+        pub fn next(it: *Iterator) ?BoardCell {
+            if (it.pos.row >= it.board.b.len) return null;
+
+            const raw_col = it.board.b[it.pos.row];
+
+            if (it.pos.col >= raw_col.len) return null;
+
+            const cell = BoardCell{
+                .pos = it.pos,
+                .tile = raw_col[it.pos.col],
+            };
+
+            // advance iterator
+            it.pos.col += 1;
+            // and check if we reached the end of a row
+            if (it.pos.col == raw_col.len) {
+                it.pos.row += 1;
+                it.pos.col = 0;
+            }
+
+            return cell;
+        }
+    };
 };
