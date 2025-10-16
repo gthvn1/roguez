@@ -93,7 +93,14 @@ pub const Game = struct {
             .floor => {
                 // is there already an item there?
                 if (self.state.getItemAt(new_pos)) |item| {
-                    self.handleItemAt(item, new_pos, direction);
+                    if (self.handleItemAt(item, new_pos, direction)) {
+                        try self.state.moveRobotTo(new_pos);
+                    } else {
+                        var buf: [5]u8 = undefined;
+                        std.debug.print("Robot hit {s} that cannot be moved in that direction\n", .{item.toChar(
+                            &buf,
+                        )});
+                    }
                 } else {
                     try self.state.moveRobotTo(new_pos);
                 }
@@ -101,30 +108,37 @@ pub const Game = struct {
         }
     }
 
-    fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) void {
-        const rp = self.state.robotPos();
+    // returns try if we can move a box from pos in the given direction
+    fn canMoveBox(self: *const Game, pos: Pos, dir: Dir) bool {
+        _ = self;
+        _ = pos;
+        const dir_str = switch (dir) {
+            Dir.up => "TODO: try to push the box upward\n",
+            Dir.down => "TODO: try to push the box downward\n",
+            Dir.left => "TODO: try to push the box to the left\n",
+            Dir.right => "TODO: try to push the box to the right\n\n",
+        };
+        std.debug.print("{s}", .{dir_str});
+        return false;
+    }
+
+    // There is an [item] at position [pos] that prevents the robot to move.
+    // If [item] can move we move it and return true, otherwise we return
+    // false.
+    fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) bool {
         switch (item) {
             .robot => unreachable,
             .box => {
-                std.debug.print("TODO: You hit a box, can't move from {d}x{d} to {d}x{d}...\n", .{
-                    rp.row,
-                    rp.col,
-                    pos.row,
-                    pos.col,
-                });
-                // TODO: we need to check if we can move the box.
-                const dir_str = switch (dir) {
-                    Dir.up => "TODO: try to push the box upward\n",
-                    Dir.down => "TODO: try to push the box downward\n",
-                    Dir.left => "TODO: try to push the box to the left\n",
-                    Dir.right => "TODO: try to push the box to the right\n\n",
-                };
-                std.debug.print("{s}", .{dir_str});
+                if (self.canMoveBox(pos, dir)) {
+                    std.debug.print("TODO: move the box\n", .{});
+                    return true;
+                }
             },
-
             .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
-            .door => std.debug.print("TODO: There is a door here\n", .{}),
+            .door => std.debug.print("TODO: There is a closed door here\n", .{}),
         }
+
+        return false;
     }
 };
 
