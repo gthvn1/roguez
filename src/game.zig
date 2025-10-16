@@ -8,14 +8,8 @@ pub const board_sample = @import("board.zig").sample;
 const Board = @import("board.zig").Board;
 const State = @import("state.zig").State;
 const Pos = @import("pos.zig").Pos;
+pub const Dir = @import("pos.zig").Dir;
 const Item = @import("item.zig").Item;
-
-pub const Dir = enum {
-    up,
-    down,
-    left,
-    right,
-};
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the robot (@) and futur robots, boxes, traps... will be
@@ -61,40 +55,17 @@ pub const Game = struct {
     }
 
     pub fn moveRobot(self: *Game, direction: Dir) !void {
-        const robot_pos = self.state.robotPos();
-
-        const next_pos =
-            switch (direction) {
-                Dir.up => if (robot_pos.row > 0) Pos{
-                    .row = robot_pos.row - 1,
-                    .col = robot_pos.col,
-                } else null,
-                Dir.down => Pos{
-                    .row = robot_pos.row + 1,
-                    .col = robot_pos.col,
-                },
-                Dir.left => if (robot_pos.col > 0) Pos{
-                    .row = robot_pos.row,
-                    .col = robot_pos.col - 1,
-                } else null,
-                Dir.right => Pos{
-                    .row = robot_pos.row,
-                    .col = robot_pos.col + 1,
-                },
-            };
-
-        if (next_pos == null) return;
-        const new_pos = next_pos.?;
+        const next_pos = self.state.robotPos().next(direction) orelse return;
 
         // Before moving we need to check if we will hit something
-        switch (self.board.getTileAt(new_pos)) {
+        switch (self.board.getTileAt(next_pos)) {
             .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
             .flag => std.debug.print("TODO: You find the flag\n", .{}),
             .floor => {
                 // is there already an item there?
-                if (self.state.getItemAt(new_pos)) |item| {
-                    if (self.handleItemAt(item, new_pos, direction)) {
-                        try self.state.moveRobotTo(new_pos);
+                if (self.state.getItemAt(next_pos)) |item| {
+                    if (self.handleItemAt(item, next_pos, direction)) {
+                        try self.state.moveRobotTo(next_pos);
                     } else {
                         var buf: [5]u8 = undefined;
                         std.debug.print("Robot hit {s} that cannot be moved in that direction\n", .{item.toUtf8(
@@ -102,13 +73,13 @@ pub const Game = struct {
                         )});
                     }
                 } else {
-                    try self.state.moveRobotTo(new_pos);
+                    try self.state.moveRobotTo(next_pos);
                 }
             },
         }
     }
 
-    // returns try if we can move a box from pos in the given direction
+    /// returns try if we can move a box from pos in the given direction
     fn canMoveBox(self: *const Game, pos: Pos, dir: Dir) bool {
         _ = self;
         _ = pos;
@@ -122,16 +93,25 @@ pub const Game = struct {
         return false;
     }
 
-    // There is an [item] at position [pos] that prevents the robot to move.
-    // If [item] can move we move it and return true, otherwise we return
-    // false.
+    /// [moveBox] moves the box to [dir] from [pos].
+    fn moveBox(self: *Game, pos: Pos, dir: Dir) bool {
+        _ = self;
+        _ = pos;
+        _ = dir;
+
+        std.debug.print("TODO: move the box\n", .{});
+        return false;
+    }
+
+    /// There is an [item] at position [pos] that prevents the robot to move.
+    /// If [item] can move we move it and return true, otherwise we return
+    /// false.
     fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) bool {
         switch (item) {
             .robot => unreachable,
             .box => {
                 if (self.canMoveBox(pos, dir)) {
-                    std.debug.print("TODO: move the box\n", .{});
-                    return true;
+                    return self.moveBox(pos, dir);
                 }
             },
             .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
