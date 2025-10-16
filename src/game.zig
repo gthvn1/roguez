@@ -93,7 +93,7 @@ pub const Game = struct {
             .floor => {
                 // is there already an item there?
                 if (self.state.getItemAt(new_pos)) |item| {
-                    self.handleItemAt(item, new_pos);
+                    self.handleItemAt(item, new_pos, direction);
                 } else {
                     try self.state.moveRobotTo(new_pos);
                 }
@@ -101,12 +101,27 @@ pub const Game = struct {
         }
     }
 
-    fn handleItemAt(self: *Game, item: Item, pos: Pos) void {
-        _ = self;
-        _ = pos;
+    fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) void {
+        const rp = self.state.robotPos();
         switch (item) {
             .robot => unreachable,
-            .box => std.debug.print("TODO: You hit a box, you can't move there...\n", .{}),
+            .box => {
+                std.debug.print("TODO: You hit a box, can't move from {d}x{d} to {d}x{d}...\n", .{
+                    rp.row,
+                    rp.col,
+                    pos.row,
+                    pos.col,
+                });
+                // TODO: we need to check if we can move the box.
+                const dir_str = switch (dir) {
+                    Dir.up => "TODO: try to push the box upward\n",
+                    Dir.down => "TODO: try to push the box downward\n",
+                    Dir.left => "TODO: try to push the box to the left\n",
+                    Dir.right => "TODO: try to push the box to the right\n\n",
+                };
+                std.debug.print("{s}", .{dir_str});
+            },
+
             .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
             .door => std.debug.print("TODO: There is a door here\n", .{}),
         }
