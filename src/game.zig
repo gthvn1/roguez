@@ -55,6 +55,7 @@ pub const Game = struct {
         while (it.next()) |i| {
             switch (i) {
                 .key => |k| std.debug.print("<{c}> ", .{k}),
+                .empty => std.debug.print(". ", .{}),
                 else => unreachable,
             }
         }
@@ -112,21 +113,8 @@ pub const Game = struct {
             .box => self.handleBox(pos, dir),
             .key => |k| self.handleKey(pos, k),
             .door => |d| self.handleDoor(pos, d),
+            .empty => return true,
         };
-    }
-
-    fn handleDoor(self: *Game, pos: Pos, door: u8) bool {
-        _ = self;
-        _ = pos;
-        std.debug.print("TODO: You need key {c} to open the door\n", .{door});
-        return false;
-    }
-
-    fn handleKey(self: *Game, pos: Pos, key: u8) bool {
-        _ = self;
-        _ = pos;
-        std.debug.print("TODO: You hit {c} key...\n", .{key});
-        return false;
     }
 
     /// if we can move a box from pos in the given direction do it and
@@ -148,6 +136,22 @@ pub const Game = struct {
             .flag => std.debug.print("TODO: You catch the flag no?...\n", .{}),
         }
 
+        return false;
+    }
+
+    fn handleKey(self: *Game, pos: Pos, key: u8) bool {
+        if (self.state.robot.addKey(key)) {
+            try self.state.removeKey(pos);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    fn handleDoor(self: *Game, pos: Pos, door: u8) bool {
+        _ = self;
+        _ = pos;
+        std.debug.print("TODO: You need key {c} to open the door\n", .{door});
         return false;
     }
 };

@@ -10,6 +10,7 @@ pub const Item = union(enum) {
     door: u8,
     box,
     robot,
+    empty,
 
     pub fn fromChar(c: u8) !Item {
         return switch (c) {
@@ -35,6 +36,7 @@ pub const Item = union(enum) {
             .door => |d| buf[0] = d,
             .box => std.mem.copyForwards(u8, buf, box),
             .robot => std.mem.copyForwards(u8, buf, robot),
+            .empty => buf[0] = 0x20, // space
         }
 
         return buf;
@@ -45,7 +47,20 @@ const Robot = struct {
     const max_items: comptime_int = 5;
 
     pos: Pos,
-    items: [max_items]?Item,
+    items: [max_items]Item,
+
+    /// Add an item in robot bag. If the bag is full it returns
+    /// false. Otherwise it returns true.
+    pub fn addKey(self: *Robot, key: u8) bool {
+        for (self.items, 0..) |i, idx| {
+            if (i == .empty) {
+                self.items[idx] = .{ .key = key };
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     pub fn items_iterator(self: *const Robot) Iterator {
         return Iterator{
@@ -59,16 +74,14 @@ const Robot = struct {
         index: usize,
 
         pub fn next(self: *Iterator) ?Item {
-            while (self.index < max_items) {
-                const current_item = self.robot.items[self.index];
-                self.index += 1;
-
-                if (current_item) |item| {
-                    return item;
-                }
+            if (self.index >= max_items) {
+                return null;
             }
 
-            return null;
+            const item = self.robot.items[self.index];
+            self.index += 1;
+
+            return item;
         }
     };
 };
@@ -130,7 +143,7 @@ pub const State = struct {
         return State{
             .robot = .{
                 .pos = robot_pos orelse return StateError.RobotNotFound,
-                .items = [_]?Item{null} ** Robot.max_items,
+                .items = [_]Item{.empty} ** Robot.max_items,
             },
             .items = items,
         };
@@ -160,6 +173,11 @@ pub const State = struct {
         // TODO: We can check that we are really removing a box
         _ = self.items.remove(from);
         try self.items.put(to, .box);
+    }
+
+    pub fn removeKey(self: *State, pos: Pos) !void {
+        // TODO: check that are really removing a key
+        _ = self.items.remove(pos);
     }
 
     pub fn destroy(self: *State) void {
