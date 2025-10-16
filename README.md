@@ -24,14 +24,16 @@ A simple roguelike game written in Zig.
 
 # Roadmap
 
-- [ ] Add enemies
-- [ ] Add keys to open doors
-- [ ] Add doors to the board
-- [ ] Implement a viewport for larger worlds
-- [ ] Allow moving objects
-- [ ] Add interactive/moving objects
 - [x] Move robot around an empty map
 - [x] Create and display a board
+- [x] Add doors to the board
+- [x] Add keys to open doors
+- [ ] Allow moving boxes
+- [ ] Add interactive/moving objects (open door with key)
+- [ ] Add an end when the flag is captured
+- [ ] Implement a viewport for larger worlds
+- [ ] Add enemies
 
 # Screenshots
+
 ![First steps](screenshot.png "first steps")
