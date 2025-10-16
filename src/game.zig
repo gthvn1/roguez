@@ -68,7 +68,7 @@ pub const Game = struct {
                         try self.state.moveRobotTo(next_pos);
                     } else {
                         var buf: [5]u8 = undefined;
-                        std.debug.print("Robot hit {s} that cannot be moved in that direction\n", .{item.toUtf8(
+                        std.debug.print("Hit {s} that cannot be moved in that direction\n", .{item.toUtf8(
                             &buf,
                         )});
                     }
@@ -79,43 +79,39 @@ pub const Game = struct {
         }
     }
 
-    /// returns try if we can move a box from pos in the given direction
-    fn canMoveBox(self: *const Game, pos: Pos, dir: Dir) bool {
-        _ = self;
-        _ = pos;
-        const dir_str = switch (dir) {
-            Dir.up => "TODO: try to push the box upward\n",
-            Dir.down => "TODO: try to push the box downward\n",
-            Dir.left => "TODO: try to push the box to the left\n",
-            Dir.right => "TODO: try to push the box to the right\n\n",
-        };
-        std.debug.print("{s}", .{dir_str});
-        return false;
-    }
-
-    /// [moveBox] moves the box to [dir] from [pos].
-    fn moveBox(self: *Game, pos: Pos, dir: Dir) bool {
-        _ = self;
-        _ = pos;
-        _ = dir;
-
-        std.debug.print("TODO: move the box\n", .{});
-        return false;
-    }
-
     /// There is an [item] at position [pos] that prevents the robot to move.
-    /// If [item] can move we move it and return true, otherwise we return
-    /// false.
+    /// [handleItemAt] takes care of moving it. If the item cannot be moved
+    /// it returns false, otherwise true.
     fn handleItemAt(self: *Game, item: Item, pos: Pos, dir: Dir) bool {
         switch (item) {
             .robot => unreachable,
-            .box => {
-                if (self.canMoveBox(pos, dir)) {
-                    return self.moveBox(pos, dir);
-                }
-            },
+            .box => return self.handleBox(pos, dir),
             .key => std.debug.print("TODO: You hit a key, you can't move there...\n", .{}),
             .door => std.debug.print("TODO: There is a closed door here\n", .{}),
+        }
+
+        return false;
+    }
+
+    /// if we can move a box from pos in the given direction do it and
+    /// returns true. Otherwise returns false.
+    fn handleBox(self: *Game, pos: Pos, dir: Dir) bool {
+        const next_pos = pos.next(dir) orelse return false;
+        switch (self.board.getTileAt(next_pos)) {
+            .floor => {
+                if (self.state.getItemAt(next_pos)) |_| {
+                    std.debug.print("TODO: An item blocks the path\n", .{});
+                    return false;
+                }
+                self.state.moveBox(pos, next_pos) catch return false;
+                return true;
+            },
+            .wall => {
+                std.debug.print("A wall is in the path\n", .{});
+            },
+            .flag => {
+                std.debug.print("TODO: You catch the flag no?...\n", .{});
+            },
         }
 
         return false;

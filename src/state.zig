@@ -89,6 +89,15 @@ pub const State = struct {
         std.debug.print("{d}x{d}\n", .{ self.robot.pos.row, self.robot.pos.col });
     }
 
+    pub fn moveBox(self: *State, from: Pos, to: Pos) !void {
+        std.debug.print("moving box from {d}x{d} to {d}x{d}\n", .{
+            from.row, from.col, to.row, to.col,
+        });
+        // TODO: We can check that we are really removing a box
+        _ = self.items.remove(from);
+        try self.items.put(to, .box);
+    }
+
     pub fn destroy(self: *State) void {
         self.items.deinit();
     }
