@@ -16,7 +16,6 @@ A simple roguelike game written in Zig.
 - `src/state.zig`: dynamic elements (robot, boxes, keys, doors, ...) called *items*
 
 ### Supported structures
-- `src/item.zig`: an element of the state
 - `src/map.zig`: contains the map as a string
 - `src/pos.zig`: is the position of an object on the board (*row x col*)
 
