@@ -28,11 +28,13 @@ A simple roguelike game written in Zig.
 - [x] Create and display a board
 - [x] Add doors to the board
 - [x] Add keys to open doors
-- [ ] Allow moving boxes
-- [ ] Add interactive/moving objects (open door with key)
+- [x] Allow moving one box to an empty space
+- [ ] Retrieve a key
+- [ ] Open door with the corresponding key
 - [ ] Add an end when the flag is captured
+- [ ] Allow moving several boxes at once
 - [ ] Implement a viewport for larger worlds
-- [ ] Add enemies
+- [ ] ...
 
 # Screenshots
 
