@@ -157,6 +157,26 @@ pub const Game = struct {
 
         return has_key;
     }
+
+    pub fn dropItem(self: *Game) !void {
+        std.debug.print("Which item do you want to release (0..4)? ", .{});
+        while (true) {
+            const val: usize = switch (readChar()) {
+                '0' => 0,
+                '1' => 1,
+                '2' => 2,
+                '3' => 3,
+                '4' => 4,
+                else => {
+                    std.debug.print("\nBetween 0 and 4 please... ", .{});
+                    continue;
+                },
+            };
+
+            try self.state.dropItem(self.state.robot.pos, val);
+            return;
+        }
+    }
 };
 
 pub fn readChar() u8 {

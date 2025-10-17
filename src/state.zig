@@ -72,6 +72,17 @@ const Robot = struct {
         return false;
     }
 
+    pub fn getItem(self: *Robot, id: usize) Item {
+        if (id >= max_items) {
+            return .empty;
+        }
+
+        const item = self.items[id];
+        self.items[id] = .empty;
+
+        return item;
+    }
+
     pub fn items_iterator(self: *const Robot) Iterator {
         return Iterator{
             .robot = self,
@@ -191,5 +202,15 @@ pub const State = struct {
 
     pub fn destroy(self: *State) void {
         self.items.deinit();
+    }
+
+    pub fn dropItem(self: *State, pos: Pos, id: usize) !void {
+        _ = pos;
+
+        switch (self.robot.getItem(id)) {
+            .key => |k| try self.items.put(self.robot.pos, .{ .key = k }),
+            .empty => {},
+            else => std.debug.print("TODO: this item is not expected in items\n", .{}),
+        }
     }
 };

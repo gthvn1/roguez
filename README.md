@@ -30,10 +30,10 @@ A simple roguelike game written in Zig.
 - [x] Allow moving one box to an empty space
   - *To do*: allow moving several boxes at once
 - [x] Retrieve a key
-  - *To do*: Put down the key
   - *To do*: If we cannot pick up the key we should be able to move over it
 - [x] Open door with the corresponding key
 - [x] Add an end when the flag is captured
+- [ ] Put down the key
 - [ ] Improve display
 - [ ] Implement a viewport for larger worlds
 - [ ] Add bombs, enemies, ...
