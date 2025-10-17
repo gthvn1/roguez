@@ -112,7 +112,7 @@ pub const Game = struct {
             .robot => unreachable,
             .box => self.handleBox(pos, dir),
             .key => |k| self.handleKey(pos, k),
-            .door => |d| self.handleDoor(pos, d),
+            .door => |d| self.handleDoor(d),
             .empty => return true,
         };
     }
@@ -148,11 +148,14 @@ pub const Game = struct {
         }
     }
 
-    fn handleDoor(self: *Game, pos: Pos, door: u8) bool {
-        _ = self;
-        _ = pos;
-        std.debug.print("TODO: You need key {c} to open the door\n", .{door});
-        return false;
+    fn handleDoor(self: *Game, door: u8) bool {
+        const key = std.ascii.toLower(door);
+        const has_key = self.state.robot.hasKey(key);
+        if (!has_key) {
+            std.debug.print("You need key <{c}> to open the door...", .{key});
+        }
+
+        return has_key;
     }
 };
 

@@ -62,6 +62,21 @@ const Robot = struct {
         return false;
     }
 
+    pub fn hasKey(self: *Robot, key: u8) bool {
+        for (self.items) |i| {
+            const found = switch (i) {
+                .key => |k| k == key,
+                else => false,
+            };
+
+            if (found) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     pub fn items_iterator(self: *const Robot) Iterator {
         return Iterator{
             .robot = self,
