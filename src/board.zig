@@ -1,5 +1,6 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
+const Glyph = @import("glyph.zig").Glyph;
 
 pub const Tile = enum {
     wall,
@@ -14,20 +15,16 @@ pub const Tile = enum {
         };
     }
 
-    pub fn toUtf8(self: Tile, buf: *[5]u8) *[5]u8 {
+    pub fn toGlyph(self: Tile) Glyph {
         // https://symbl.cc/en/unicode-table
         const wall = "\u{25A0}";
         const flag = "\u{2691}";
 
-        std.mem.copyForwards(u8, buf, &[_]u8{ 0, 0, 0, 0, 0 });
-
-        switch (self) {
-            .wall => std.mem.copyForwards(u8, buf, wall),
-            .flag => std.mem.copyForwards(u8, buf, flag),
-            .floor => buf[0] = 0x20,
-        }
-
-        return buf;
+        return switch (self) {
+            .wall => Glyph.fromUtf8(wall),
+            .flag => Glyph.fromUtf8(flag),
+            .floor => Glyph.fromChar(' '),
+        };
     }
 };
 

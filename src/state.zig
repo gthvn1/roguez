@@ -1,5 +1,6 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
+const Glyph = @import("glyph.zig").Glyph;
 
 const ItemError = error{
     UnknownItem,
@@ -22,24 +23,20 @@ pub const Item = union(enum) {
         };
     }
 
-    pub fn toUtf8(self: Item, buf: *[5]u8) *[5]u8 {
+    pub fn toGlyph(self: Item) Glyph {
         // https://symbl.cc/en/unicode-table
         // Unicode requires at most 4 bytes for encoding. So to have a null
         // terminated string we need 5 bytes.
         const robot = "\u{26D1}";
         const box = "\u{26C1}";
 
-        std.mem.copyForwards(u8, buf, &[_]u8{ 0, 0, 0, 0, 0 });
-
-        switch (self) {
-            .key => |k| buf[0] = k,
-            .door => |d| buf[0] = d,
-            .box => std.mem.copyForwards(u8, buf, box),
-            .robot => std.mem.copyForwards(u8, buf, robot),
-            .empty => buf[0] = 0x20, // space
-        }
-
-        return buf;
+        return switch (self) {
+            .key => |k| Glyph.fromChar(k),
+            .door => |d| Glyph.fromChar(d),
+            .box => Glyph.fromUtf8(box),
+            .robot => Glyph.fromUtf8(robot),
+            .empty => Glyph.fromChar(' '),
+        };
     }
 };
 
@@ -144,12 +141,11 @@ pub const State = struct {
 
         // Before returning we print the items found all along the way
         var iter = items.iterator();
-        var buf: [5]u8 = undefined;
 
         std.debug.print("==== List of items found ==== \n", .{});
         while (iter.next()) |item| {
             std.debug.print("  - {s} at {d}x{d}\n", .{
-                item.value_ptr.toUtf8(&buf),
+                item.value_ptr.toGlyph().slice(),
                 item.key_ptr.row,
                 item.key_ptr.col,
             });

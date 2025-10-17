@@ -62,8 +62,6 @@ pub const Game = struct {
         std.debug.print("\n==== Board ====\n", .{});
 
         var board_iter = self.board.iter();
-        var buf: [5]u8 = undefined;
-
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {
                 std.debug.print("\n", .{});
@@ -72,9 +70,9 @@ pub const Game = struct {
             // If we have an item at the given position print it, otherwise
             // print the tile.
             if (self.state.getItemAt(cell.pos)) |item| {
-                std.debug.print("{s} ", .{item.toUtf8(&buf)});
+                std.debug.print("{s} ", .{item.toGlyph().slice()});
             } else {
-                std.debug.print("{s} ", .{cell.tile.toUtf8(&buf)});
+                std.debug.print("{s} ", .{cell.tile.toGlyph().slice()});
             }
         }
 
