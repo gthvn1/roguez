@@ -24,11 +24,9 @@ pub const Item = union(enum) {
     }
 
     pub fn toGlyph(self: Item) Glyph {
-        // https://symbl.cc/en/unicode-table
-        // Unicode requires at most 4 bytes for encoding. So to have a null
-        // terminated string we need 5 bytes.
-        const robot = "\u{26D1}";
-        const box = "\u{26C1}";
+        // https://www.unicodecharacter.org/
+        const robot = "\u{263A}";
+        const box = "\u{25A4}";
 
         return switch (self) {
             .key => |k| Glyph.fromChar(k),

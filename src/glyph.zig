@@ -5,21 +5,20 @@ pub const Glyph = struct {
 
     pub fn fromUtf8(s: []const u8) Glyph {
         var g = Glyph{
-            .bytes = [_]u8{ 0, 0, 0, 0, 0 },
+            .bytes = [_]u8{ '?', 0, 0, 0, 0 },
         };
 
-        const len = @min(s.len, 4);
-        std.mem.copyForwards(u8, g.bytes[0..len], s);
+        if (s.len <= 4) {
+            std.mem.copyForwards(u8, g.bytes[0..s.len], s);
+        }
+
         return g;
     }
 
     pub fn fromChar(c: u8) Glyph {
-        var g = Glyph{
-            .bytes = [_]u8{ 0, 0, 0, 0, 0 },
+        return .{
+            .bytes = [_]u8{ c, 0, 0, 0, 0 },
         };
-
-        g.bytes[0] = c;
-        return g;
     }
 
     pub fn slice(self: *const Glyph) []const u8 {

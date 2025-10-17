@@ -143,6 +143,7 @@ pub const Game = struct {
             try self.state.removeKey(pos);
             return true;
         } else {
+            std.debug.print("It looks like you can not take a new key\n", .{});
             return false;
         }
     }

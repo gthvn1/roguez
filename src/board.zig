@@ -16,8 +16,8 @@ pub const Tile = enum {
     }
 
     pub fn toGlyph(self: Tile) Glyph {
-        // https://symbl.cc/en/unicode-table
-        const wall = "\u{25A0}";
+        // https://www.unicodecharacter.org/
+        const wall = "\u{2612}";
         const flag = "\u{2691}";
 
         return switch (self) {
