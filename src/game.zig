@@ -88,7 +88,8 @@ pub const Game = struct {
         // Before moving we need to check if we will hit something
         switch (next_cell.tile) {
             .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
-            .flag => std.debug.print("TODO: You find the flag\n", .{}),
+            .flag => std.debug.print("🏁 Victory! The robot has captured the flag!\n", .{}),
+
             .floor => {
                 if (next_cell.item) |item| {
                     if (self.handleItemAt(item, next_pos, direction)) {

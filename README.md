@@ -33,9 +33,10 @@ A simple roguelike game written in Zig.
   - *To do*: Put down the key
   - *To do*: If we cannot pick up the key we should be able to move over it
 - [x] Open door with the corresponding key
-- [ ] Add an end when the flag is captured
+- [x] Add an end when the flag is captured
+- [ ] Improve display
 - [ ] Implement a viewport for larger worlds
-- [ ] ...
+- [ ] Add bombs, enemies, ...
 
 # Screenshots
 
