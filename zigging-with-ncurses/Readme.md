@@ -6,4 +6,5 @@
 - I am able to build and run the hello world program from `main.c` using: `make && ./hello`.
 
 ## Zig
+
 Next up: Let’s take the excitement further by running the same example using Zig! 🎉
