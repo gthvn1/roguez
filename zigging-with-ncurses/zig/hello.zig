@@ -1,6 +1,6 @@
 const std = @import("std");
 const ncurses = @cImport({
-    @cInclude("ncurses/ncurses.h");
+    @cInclude("ncurses.h");
 });
 
 pub fn main() void {

@@ -7,4 +7,5 @@
 
 ## Zig
 
-Next up: Let’s take the excitement further by running the same example using Zig! 🎉
+- Run the same example using Zig! 🎉
+- Use the installed library. On Debian it is located at `/usr/lib/x86_64-linux-gnu/libncursesw.so.6.4`.
