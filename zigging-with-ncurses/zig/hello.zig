@@ -82,12 +82,12 @@ pub fn main() !void {
     _ = n.start_color();
 
     _ = n.init_pair(1, n.COLOR_GREEN, n.COLOR_BLACK);
-    _ = n.init_pair(2, n.COLOR_BLACK, n.COLOR_GREEN);
-    _ = n.init_pair(3, n.COLOR_BLACK, n.COLOR_YELLOW);
-    _ = n.init_pair(4, n.COLOR_BLACK, n.COLOR_BLUE);
-    _ = n.init_pair(5, n.COLOR_BLACK, n.COLOR_CYAN);
-    _ = n.init_pair(6, n.COLOR_BLACK, n.COLOR_MAGENTA);
-    _ = n.init_pair(7, n.COLOR_BLACK, n.COLOR_RED);
+    _ = n.init_pair(2, n.COLOR_WHITE, n.COLOR_BLACK);
+    _ = n.init_pair(3, n.COLOR_YELLOW, n.COLOR_BLACK);
+    _ = n.init_pair(4, n.COLOR_BLUE, n.COLOR_BLACK);
+    _ = n.init_pair(5, n.COLOR_CYAN, n.COLOR_BLACK);
+    _ = n.init_pair(6, n.COLOR_MAGENTA, n.COLOR_BLACK);
+    _ = n.init_pair(7, n.COLOR_RED, n.COLOR_BLACK);
 
     const max_x = n.getmaxx(stdscr);
     const max_y = n.getmaxy(stdscr);
