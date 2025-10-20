@@ -9,3 +9,4 @@
 
 - Run the same example using Zig! 🎉
 - Use the installed library. On Debian it is located at `/usr/lib/x86_64-linux-gnu/libncursesw.so.6.4`.
+- Next: draw a maze
