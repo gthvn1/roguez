@@ -5,7 +5,7 @@ A simple roguelike game written in Zig.
 - Tested with Zig 0.15.2
 - We are using *ncurses* for displaying output.
 On some distributions, the *libncurses.so* library is provided as a linker script rather
-than a regular ELF file. It seemss that Zig does not handle this correctly, so we build
+than a regular ELF file. It seems that Zig does not handle this correctly, so we build
 *ncurses* manually as follows:
 - From the project root, create and enter a directory for *ncurses*:
 ```sh
