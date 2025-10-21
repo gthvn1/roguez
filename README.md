@@ -64,7 +64,7 @@ zig build run
 - [x] Open door with the corresponding key
 - [x] Add an end when the flag is captured
 - [ ] Improve display using *ncurses*
-  - [ ] Begin with C and transition to Zig: `zigging-with-ncurses`
+  - [x] Begin with C and transition to Zig: `zigging-with-ncurses`
   - [ ] Swap out the current text-based implementation
 - [ ] Implement a viewport for larger worlds
 - [ ] Add bombs, enemies, ...
