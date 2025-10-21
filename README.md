@@ -35,7 +35,7 @@ ln -s ncurses/ncurses.h .
 zig build run
 ```
 
-## Files
+## Main files
 
 ### Entry point
 - `src/main.zig`: entry point and game loop
@@ -47,7 +47,6 @@ zig build run
 
 ### Supported structures
 - `src/map.zig`: contains the map as a string
-- `src/pos.zig`: is the position of an object on the board (*row x col*)
 
 *Note: "tiles" are static parts of the world that cannot be interacted with. "Items" are objects that can move or be interacted with, even if they don't move.*
 
