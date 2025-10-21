@@ -3,7 +3,37 @@
 A simple roguelike game written in Zig.
 
 - Tested with Zig 0.15.2
-- Run with: `zig build run`
+- We are using *ncurses* for displaying output.
+On some distributions, the *libncurses.so* library is provided as a linker script rather
+than a regular ELF file. It seemss that Zig does not handle this correctly, so we build
+*ncurses* manually as follows:
+- From the project root, create and enter a directory for *ncurses*:
+```sh
+mkdir ncurses
+cd ncurses
+```
+- Download and extract the source from *ncurses*'[homepage](https://invisible-island.net/datafiles/release/ncurses.tar.gz)
+
+```sh
+wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
+tar xf ncurses.tar.gz
+cd ncurses-6.3
+```
+- Build and install *ncurses* locally:
+```sh
+./configure --prefix="$PWD/.."
+make && make install
+```
+- Create a symlink to simplify includes (so you can include *ncurses.h* directly):
+```sh
+cd ../include
+ln -s ncurses/ncurses.h .
+```
+- You should now have *ncurses* installed locally.
+- Run the project with:
+```sh
+zig build run
+```
 
 ## Files
 

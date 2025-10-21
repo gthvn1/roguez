@@ -11,7 +11,8 @@ pub fn build(b: *std.Build) !void {
     });
 
     hello_ncurses_exe.linkLibC();
-    hello_ncurses_exe.addObjectFile(.{ .cwd_relative = "/usr/lib/x86_64-linux-gnu/libncursesw.so.6.4" });
+    hello_ncurses_exe.addIncludePath(b.path("../../ncurses/include"));
+    hello_ncurses_exe.addObjectFile(b.path("../../ncurses/lib/libncurses.a"));
 
     b.installArtifact(hello_ncurses_exe);
 
