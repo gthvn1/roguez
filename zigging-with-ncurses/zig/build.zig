@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
 
     const examples = [_][]const u8{
-        "example2", "maze",
+        "example2", "example7", "maze",
     };
 
     for (examples) |name| {
