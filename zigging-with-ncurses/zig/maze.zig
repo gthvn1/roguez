@@ -69,9 +69,7 @@ pub fn main() !void {
     const map = try map_of_string(&allocator, map_str);
     defer free_map(&allocator, map);
 
-    const stdscr = n.initscr();
-    // In case of errors a message is written to stderr and initscr
-    // exists.
+    _ = n.initscr();
     defer _ = n.endwin();
 
     // if (!n.has_colors()) {
@@ -92,26 +90,28 @@ pub fn main() !void {
     _ = n.init_pair(6, n.COLOR_MAGENTA, n.COLOR_BLACK);
     _ = n.init_pair(7, n.COLOR_RED, n.COLOR_BLACK);
 
-    const max_x = n.getmaxx(stdscr);
-    const max_y = n.getmaxy(stdscr);
-
     const maze_rows: c_int = @intCast(map.len);
     const maze_cols: c_int = @intCast(map[0].len);
 
     // Rows are from y = 0 to y = max_y
     // Cols are from x = 0 to x = max_x
 
-    if (max_y < maze_rows + 2) {
-        std.debug.print("Your terminal has {d} rows, your map needs {d}\n", .{ max_y, maze_rows });
+    // We keep one line above the maze to print things
+    if (n.LINES < maze_rows + 1) {
+        std.debug.print("Your terminal has {d} rows, your map needs {d}\n", .{ n.LINES, maze_rows });
         return;
     }
 
-    if (max_x < maze_cols + 2) {
-        std.debug.print("Your terminal has {d} cols, your map needs {d}\n", .{ max_x, maze_cols });
+    if (n.COLS < maze_cols) {
+        std.debug.print("Your terminal has {d} cols, your map needs {d}\n", .{ n.COLS, maze_cols });
         return;
     }
 
-    const maze_win = n.newwin(maze_rows, maze_cols, 1, 1);
+    _ = n.mvprintw(0, 0, "Everything looks good");
+    _ = n.refresh();
+
+    // Create a new window for the maze
+    const maze_win = n.newwin(maze_rows, maze_cols, 1, 0);
     defer _ = n.delwin(maze_win);
 
     for (map, 0..) |row, row_idx| {
@@ -132,7 +132,6 @@ pub fn main() !void {
         }
     }
     _ = n.wrefresh(maze_win);
-    _ = n.refresh();
 
     // TODO: create a window for debug
     _ = n.getch(); // Wait for user input
