@@ -74,10 +74,13 @@ pub fn main() !void {
     // exists.
     defer _ = n.endwin();
 
-    if (!n.has_colors()) {
-        std.debug.print("Your terminal does not support color\n", .{});
-        return;
-    }
+    // if (!n.has_colors()) {
+    //     std.debug.print("Your terminal does not support color\n", .{});
+    //     return;
+    // }
+
+    _ = n.cbreak();
+    _ = n.noecho();
 
     _ = n.start_color();
 
@@ -92,43 +95,45 @@ pub fn main() !void {
     const max_x = n.getmaxx(stdscr);
     const max_y = n.getmaxy(stdscr);
 
-    const max_row: c_int = @intCast(map.len);
-    const max_col: c_int = @intCast(map[0].len);
+    const maze_rows: c_int = @intCast(map.len);
+    const maze_cols: c_int = @intCast(map[0].len);
 
     // Rows are from y = 0 to y = max_y
     // Cols are from x = 0 to x = max_x
-    if (max_y < max_row) {
-        std.debug.print("Your terminal has {d} rows, your map needs {d}\n", .{ max_y, max_row });
+
+    if (max_y < maze_rows + 2) {
+        std.debug.print("Your terminal has {d} rows, your map needs {d}\n", .{ max_y, maze_rows });
         return;
     }
 
-    if (max_x < max_col) {
-        std.debug.print("Your terminal has {d} cols, your map needs {d}\n", .{ max_x, max_col });
+    if (max_x < maze_cols + 2) {
+        std.debug.print("Your terminal has {d} cols, your map needs {d}\n", .{ max_x, maze_cols });
         return;
     }
+
+    const maze_win = n.newwin(maze_rows, maze_cols, 1, 1);
+    defer _ = n.delwin(maze_win);
 
     for (map, 0..) |row, row_idx| {
         for (row, 0..) |c, col_idx| {
             const y: c_int = @intCast(row_idx);
             const x: c_int = @intCast(col_idx);
-            _ = switch (c) {
-                '@' => n.attron(n.COLOR_PAIR(7)),
-                'a'...'z' => n.attron(n.COLOR_PAIR(3)),
-                'A'...'Z' => n.attron(n.COLOR_PAIR(4)),
-                '#' => n.attron(n.COLOR_PAIR(5)),
-                '&' => n.attron(n.COLOR_PAIR(6)),
-                else => n.attron(n.COLOR_PAIR(1)),
+            const color: c_int = switch (c) {
+                '@' => 7,
+                'a'...'z' => 3,
+                'A'...'Z' => 4,
+                '#' => 5,
+                '&' => 6,
+                else => 1,
             };
-            _ = n.mvprintw(y, x, "%c", c);
+            _ = n.wattron(maze_win, n.COLOR_PAIR(color));
+            _ = n.mvwaddch(maze_win, y, x, c);
+            _ = n.wattroff(maze_win, n.COLOR_PAIR(color));
         }
     }
-
-    _ = n.attron(n.COLOR_PAIR(2));
-    _ = n.mvprintw(max_row + 1, 0, "DEBUG: max_row = %d", max_row);
-    _ = n.mvprintw(max_row + 2, 0, "DEBUG: max_col = %d", max_col);
-    _ = n.mvprintw(max_row + 3, 0, "DEBUG: max_y   = %d", max_y);
-    _ = n.mvprintw(max_row + 4, 0, "DEBUG: max_x   = %d", max_x);
-
+    _ = n.wrefresh(maze_win);
     _ = n.refresh();
+
+    // TODO: create a window for debug
     _ = n.getch(); // Wait for user input
 }

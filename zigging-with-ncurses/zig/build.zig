@@ -1,22 +1,35 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const hello_ncurses_exe = b.addExecutable(.{
-        .name = "hello_ncurses",
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("hello.zig"),
-            .target = b.standardTargetOptions(.{}),
-            .optimize = b.standardOptimizeOption(.{}),
-        }),
-    });
+    const target = b.standardTargetOptions(.{});
+    const optimize = b.standardOptimizeOption(.{});
 
-    hello_ncurses_exe.linkLibC();
-    hello_ncurses_exe.addIncludePath(b.path("../../ncurses/include"));
-    hello_ncurses_exe.addObjectFile(b.path("../../ncurses/lib/libncurses.a"));
+    const examples = [_][]const u8{
+        "example2", "maze",
+    };
 
-    b.installArtifact(hello_ncurses_exe);
+    for (examples) |name| {
+        // Building and running ex1
+        const exe = b.addExecutable(.{
+            .name = name,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(b.fmt("{s}.zig", .{name})),
+                .target = target,
+                .optimize = optimize,
+            }),
+        });
 
-    const run_step = b.step("run", "run the hello ncurses app");
-    const run_cmd = b.addRunArtifact(hello_ncurses_exe);
-    run_step.dependOn(&run_cmd.step);
+        exe.linkLibC();
+        exe.addIncludePath(b.path("../../ncurses/include"));
+        exe.addObjectFile(b.path("../../ncurses/lib/libncurses.a"));
+
+        b.installArtifact(exe);
+
+        const run = b.addRunArtifact(exe);
+        const step = b.step(
+            b.fmt("run-{s}", .{name}),
+            b.fmt("Run {s}", .{name}),
+        );
+        step.dependOn(&run.step);
+    }
 }
