@@ -14,3 +14,4 @@
 - Draw a maze
 - Next: use it for **RogueZ**...
 - To run a specific example: `zig build run-{name_of_source_the_file}`
+    - For example: `zig build run-example7`
