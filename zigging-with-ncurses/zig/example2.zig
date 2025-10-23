@@ -2,7 +2,7 @@
 // Example 2. Initialization Function Usage example
 const std = @import("std");
 const n = @cImport({
-    @cInclude("ncurses.h");
+    @cInclude("ncursesw/ncurses.h");
 });
 
 pub fn main() void {

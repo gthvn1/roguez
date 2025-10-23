@@ -1,6 +1,6 @@
 const std = @import("std");
 const n = @cImport({
-    @cInclude("ncurses.h");
+    @cInclude("ncursesw/ncurses.h");
 });
 
 pub const map_str: []const u8 =
@@ -141,7 +141,7 @@ pub fn main() !void {
     _ = n.refresh();
 
     // Create a new window for the maze
-    const maze_win = n.newwin(maze_rows, maze_cols, 2, 0);
+    const maze_win = n.newwin(maze_rows, maze_cols, 2, 0) orelse unreachable;
     defer _ = n.delwin(maze_win);
 
     // TODO: create a window for debug
@@ -171,7 +171,7 @@ pub fn main() !void {
     }
 }
 
-fn draw_map(win: [*c]n.struct__win_st, m: Map) void {
+fn draw_map(win: *n.struct__win_st, m: Map) void {
     for (m.map, 0..) |row, row_idx| {
         for (row, 0..) |c, col_idx| {
             const y: c_int = @intCast(row_idx);
@@ -189,14 +189,14 @@ fn draw_map(win: [*c]n.struct__win_st, m: Map) void {
     _ = n.wrefresh(win);
 }
 
-fn update_robot(win: [*c]n.struct__win_st, row_from: c_int, col_from: c_int, row_to: c_int, col_to: c_int) void {
+fn update_robot(win: *n.struct__win_st, row_from: c_int, col_from: c_int, row_to: c_int, col_to: c_int) void {
     // TODO: currently we just erase the old character.
     draw_cell(win, ' ', 5, row_from, col_from);
     draw_cell(win, '@', 5, row_to, col_to);
     _ = n.wrefresh(win);
 }
 
-fn draw_cell(win: [*c]n.struct__win_st, char: u8, color: c_int, row: c_int, col: c_int) void {
+fn draw_cell(win: *n.struct__win_st, char: u8, color: c_int, row: c_int, col: c_int) void {
     _ = n.wattron(win, n.COLOR_PAIR(color));
     _ = n.mvwaddch(win, row, col, char);
     _ = n.wattroff(win, n.COLOR_PAIR(color));

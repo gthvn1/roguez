@@ -3,10 +3,10 @@
 CC=gcc
 SRC=hello.c
 TARGET=hello
-INC_DIR=$(HOME)/opt/ncurses/include
-LIB_DIR=$(HOME)/opt/ncurses/lib64
+INC_DIR=../../ncurses/include/
+LIB_DIR=../../ncurses/lib/
 CFLAGS=-I$(INC_DIR)
-LFLAGS=-L$(LIB_DIR) -lncurses
+LFLAGS=-L$(LIB_DIR) -lncursesw
 
 all: $(TARGET)
 

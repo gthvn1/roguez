@@ -1,4 +1,4 @@
-#include <ncurses/ncurses.h>
+#include <ncursesw/ncurses.h>
 
 int main() {
     initscr();            // Start curses mode

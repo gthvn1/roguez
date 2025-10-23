@@ -15,19 +15,21 @@ cd ncurses
 - Download and extract the source from *ncurses*'[homepage](https://invisible-island.net/datafiles/release/ncurses.tar.gz)
 
 ```sh
-wget https://invisible-island.net/datafiles/release/ncurses.tar.gz
+wget https://ftp.gnu.org/gnu/ncurses/ncurses-6.5.tar.gz
 tar xf ncurses.tar.gz
-cd ncurses-6.3
+cd ncurses-6.5
 ```
 - Build and install *ncurses* locally:
 ```sh
 ./configure --prefix="$PWD/.."
-make && make install
+make
+make install
 ```
-- Create a symlink to simplify includes (so you can include *ncurses.h* directly):
+- On some systems, libraries are installed under *lib64*. As the build process expects
+them in *lib*, you can create a symbolic link:
 ```sh
-cd ../include
-ln -s ncurses/ncurses.h .
+cd ..
+ln -s lib64 lib
 ```
 - You should now have *ncurses* installed locally.
 - Run the project with:

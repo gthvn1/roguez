@@ -2,7 +2,7 @@
 // Example 7. Window Border example
 const std = @import("std");
 const n = @cImport({
-    @cInclude("ncurses.h");
+    @cInclude("ncursesw/ncurses.h");
 });
 
 pub fn main() void {
@@ -22,12 +22,12 @@ pub fn main() void {
     _ = n.printw("Press F1 to exit");
     _ = n.refresh();
 
-    var my_win: [*c]n.struct__win_st = create_newwin(
+    var my_win: *n.struct__win_st = create_newwin(
         height,
         width,
         starty,
         startx,
-    );
+    ) orelse return;
 
     main_loop: while (true) {
         switch (n.getch()) {
@@ -39,11 +39,13 @@ pub fn main() void {
             else => continue :main_loop,
         }
         destroy_win(my_win);
-        my_win = create_newwin(height, width, starty, startx);
+        my_win = create_newwin(height, width, starty, startx) orelse return;
     }
+
+    destroy_win(my_win);
 }
 
-fn create_newwin(height: c_int, width: c_int, starty: c_int, startx: c_int) [*c]n.struct__win_st {
+fn create_newwin(height: c_int, width: c_int, starty: c_int, startx: c_int) ?*n.struct__win_st {
     const local_win = n.newwin(height, width, starty, startx);
 
     _ = n.box(local_win, 0, 0);
@@ -53,7 +55,7 @@ fn create_newwin(height: c_int, width: c_int, starty: c_int, startx: c_int) [*c]
     return local_win;
 }
 
-fn destroy_win(local_win: [*c]n.struct__win_st) void {
+fn destroy_win(local_win: *n.struct__win_st) void {
     // box(local_win, ' ', ' '); : This won't produce the desired
     // result of erasing the window. It will leave it's four corners
     // and so an ugly remnant of window.
