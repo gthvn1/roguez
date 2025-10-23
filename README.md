@@ -3,7 +3,8 @@
 A simple roguelike game written in Zig.
 
 - Tested with Zig 0.15.2
-- We are using *ncurses* for displaying output.
+- We are using *ncurses* (we need to try [libaxis](https://github.com/rockorager/libvaxis))
+for displaying output.
 On some distributions, the *libncurses.so* library is provided as a linker script rather
 than a regular ELF file. It seems that Zig does not handle this correctly, so we build
 *ncurses* manually as follows:
@@ -74,6 +75,7 @@ zig build run
 - [ ] Improve display using *ncurses*
   - [x] Begin with C and transition to Zig: `zigging-with-ncurses`
   - [ ] Swap out the current text-based implementation
+- [ ] Try [libaxis](https://github.com/rockorager/libvaxis)
 - [ ] Implement a viewport for larger worlds
 - [ ] Add bombs, enemies, ...
 
