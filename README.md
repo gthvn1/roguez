@@ -19,17 +19,22 @@ wget https://ftp.gnu.org/gnu/ncurses/ncurses-6.5.tar.gz
 tar xf ncurses.tar.gz
 cd ncurses-6.5
 ```
-- Build and install *ncurses* locally:
+- Build and install *ncurses* locally. Linux distributions are handling multilib (multi-architecture)
+systems in a different way. For example Debian is using `/usr/lib` library directory while OpenSuse
+is using `/usr/lib64`. We also see some differences in the way boolean type is built. On some system
+it is handle using `stdbool.h` while others use integer. So we are passing options to be able to use
+the library on Debian and OpenSuse.
 ```sh
-./configure --prefix="$PWD/.."
+./configure \
+    --without-ada \
+    --enable-ext-colors \
+    --enable-widec \
+    --with-cxx \
+    --enable-warnings \
+    --libdir="$PWD/../lib64" \
+    --prefix="$PWD/../"
 make
 make install
-```
-- On some systems, libraries are installed under *lib64*. As the build process expects
-them in *lib*, you can create a symbolic link:
-```sh
-cd ..
-ln -s lib64 lib
 ```
 - You should now have *ncurses* installed locally.
 - Run the project with:
