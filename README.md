@@ -27,8 +27,10 @@ libraries under `/usr/lib`, while OpenSuse uses `/usr/lib64`.
 it relies on `<stdbool.h>` (usin the C99 *bool* type), while on others it falls back to
 an interger type. This leads to ABI incompatibilites when building ncurses with Zig:
 on our Debian distribution *bool* maps to *bool*, while on OpenSuse it maps to *c_int*.
+We didn't find how to handle it. Currently it is tested on Debian and you need to change
+the type in examples if you have this issue.
 ```sh
-CFLAGS="-DHAVE_STDBOOL_H=1" ./configure \
+./configure \
     --without-ada \
     --libdir="$PWD/../lib64" \
     --prefix="$PWD/../"
