@@ -3,8 +3,8 @@
 CC=gcc
 SRC=hello.c
 TARGET=hello
-INC_DIR=../../ncurses/include/
-LIB_DIR=../../ncurses/lib/
+INC_DIR=../ncurses-build/include
+LIB_DIR=../ncurses-build/lib
 CFLAGS=-I$(INC_DIR)
 LFLAGS=-L$(LIB_DIR) -lncursesw
 

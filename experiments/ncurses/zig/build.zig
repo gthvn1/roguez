@@ -20,8 +20,8 @@ pub fn build(b: *std.Build) !void {
         });
 
         exe.linkLibC();
-        exe.addIncludePath(b.path("../../ncurses/include"));
-        exe.addObjectFile(b.path("../../ncurses/lib64/libncursesw.a"));
+        exe.addIncludePath(b.path("../ncurses-build/include"));
+        exe.addObjectFile(b.path("../ncurses-build/lib/libncursesw.a"));
 
         b.installArtifact(exe);
 

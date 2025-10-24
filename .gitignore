@@ -1,5 +1,5 @@
 .zig-cache/
 zig-out/
 *.o
-ncurses/
+ncurses-build/
 hello
