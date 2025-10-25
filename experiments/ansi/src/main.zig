@@ -24,6 +24,16 @@ pub fn main() !void {
     // moves cursor to beginning of next line
     try stdout.print("\x1b[#E", .{});
 
+    const line = [_]u8{ '#', '#', '#', '#' };
+
+    // Print a yellow line
+    try stdout.print("\x1b[33m", .{});
+    for (line) |c| {
+        try stdout.print("{c}", .{c});
+    }
+    try stdout.print("\n", .{});
+    try stdout.print("\x1b[0m", .{});
+
     // Don't forget to flush
     try stdout.flush();
 }
