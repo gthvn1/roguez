@@ -40,15 +40,16 @@ pub fn main() !void {
     try set_title(stdout);
 
     // - then we have the maze
-    // Set cursor position right after the maze when writing the result
-    // of read_char. It will erase the caracter we pressed.
     try draw_maze(stdout, &m);
 
+    // - At line 1 + maze height + 1 we can print the position of the robot
+    try stdout.print("\x1b[{d};1H", .{1 + m.height + 1});
+    try stdout.print("Robot: line {d}, column {d}\n", .{ m.robot.line, m.robot.column });
+    try stdout.flush();
+
     if (read_char()) |carlu| {
-        try stdout.print("\x1b[{d};1H", .{1 + m.height});
         try stdout.print("\nYou pressed: 0x{x}\n", .{carlu});
     } else {
-        try stdout.print("\x1b[{d};1H", .{1 + m.height + 1});
         try stdout.print("\nFailed to read a char\n", .{});
     }
     try stdout.flush();
