@@ -35,6 +35,7 @@ pub fn main() !void {
     set_raw_mode();
 
     try erase_screen(stdout);
+    try make_cursor_invisible(stdout);
 
     // - 1st line is the title
     try set_title(stdout);
@@ -43,16 +44,41 @@ pub fn main() !void {
     try draw_maze(stdout, &m);
 
     // - At line 1 + maze height + 1 we can print the position of the robot
-    try stdout.print("\x1b[{d};1H", .{1 + m.height + 1});
+    const robot_status_line = 1 + m.height + 1;
+
+    try stdout.print("\x1b[{d};1H", .{robot_status_line});
     try stdout.print("Robot: line {d}, column {d}\n", .{ m.robot.line, m.robot.column });
+
+    try stdout.print("Use arrows keys to move, 'q' to quit\n", .{});
     try stdout.flush();
 
-    if (read_char()) |carlu| {
-        try stdout.print("\nYou pressed: 0x{x}\n", .{carlu});
-    } else {
-        try stdout.print("\nFailed to read a char\n", .{});
+    // Go to next line
+    const status_line = robot_status_line + 2;
+
+    while (true) {
+        // Move cursor to status line and erase the line to be
+        // ready to write new status.
+        try stdout.print("\x1b[{d};1H\x1b[2K", .{status_line});
+        if (read_char()) |carlu| {
+            switch (carlu) {
+                'h', 0x44 => try stdout.print("ToDo: move left", .{}),
+                'j', 0x42 => try stdout.print("ToDo: move down", .{}),
+                'k', 0x41 => try stdout.print("ToDo: move up", .{}),
+                'l', 0x43 => try stdout.print("ToDo: move right", .{}),
+                'q' => {
+                    try stdout.print("Bye !!!", .{});
+                    try stdout.flush();
+                    break;
+                },
+                else => try stdout.print("You pressed {c}", .{carlu}),
+            }
+            try stdout.flush();
+        } else {
+            try stdout.print("\nFailed to read a char\n", .{});
+            try stdout.flush();
+            break;
+        }
     }
-    try stdout.flush();
 }
 
 fn set_raw_mode() void {
@@ -67,9 +93,10 @@ fn set_raw_mode() void {
 
 fn erase_screen(out: *std.Io.Writer) !void {
     try out.writeAll("\x1b[2J");
+}
 
-    // Reset all modes
-    try out.print("\x1b[0m", .{});
+fn make_cursor_invisible(out: *std.Io.Writer) !void {
+    try out.writeAll("\x1b[?25l");
 }
 
 fn set_title(out: *std.Io.Writer) !void {
