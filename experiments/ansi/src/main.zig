@@ -97,17 +97,17 @@ pub fn main() !void {
     var allocator = gpa.allocator();
 
     const m = try Map.of_string(&allocator, map_str);
-    // https//gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b
+    // https://gist.github.com/ConnerWill/d4b6c776b509add763e17f9f113fd25b
     // ESC     -> \x1b
     // Unicode -> \u001b
 
     try stdout.writeAll("\x1b[2J");
 
-    // Move cursor to (1,1)
-    try stdout.print("\x1b[1;1H", .{});
+    // Move cursor to (1,10)
+    try stdout.print("\x1b[1;12H", .{});
 
-    // Print a red '@' for the player
-    try stdout.print("\x1b[31m{s}\x1b[0m", .{"Hello, Sailor!"});
+    // Print a red , bold, underline, italic title
+    try stdout.print("\x1b[1;3;4;31m{s}\x1b[0m", .{"Welcome to RogueZ !"});
 
     // moves cursor to beginning of next line
     try stdout.print("\x1b[#E", .{});
@@ -116,17 +116,50 @@ pub fn main() !void {
     for (m.map) |line| {
         for (line) |c| {
             switch (c) {
-                '@' => {
-                    try stdout.print("\x1b[32m", .{});
+                '&' => {
+                    // Yellow
+                    try stdout.print("\x1b[1;33m", .{});
                     try stdout.print("{c}", .{c});
-                    try stdout.print("\x1b[0m", .{});
+                },
+                '$' => {
+                    // Red
+                    try stdout.print("\x1b[1;31m", .{});
+                    try stdout.print("{c}", .{c});
+                },
+                '@' => {
+                    // Green
+                    try stdout.print("\x1b[1;32m", .{});
+                    try stdout.print("{c}", .{c});
+                },
+                'a'...'z' => {
+                    // Magenta
+                    try stdout.print("\x1b[1;35m", .{});
+                    try stdout.print("{c}", .{c});
+                },
+                'A'...'Z' => {
+                    // Blue
+                    try stdout.print("\x1b[1;34m", .{});
+                    try stdout.print("{c}", .{c});
+                },
+                '.' => {
+                    // Black
+                    try stdout.print("\x1b[1;30m", .{});
+                    try stdout.print(" ", .{});
+                },
+                '#' => {
+                    // Cyan and don't use bold
+                    try stdout.print("\x1b[0;36m", .{});
+                    try stdout.print("{c}", .{c});
                 },
                 else => {
-                    try stdout.print("\x1b[33m", .{});
+                    // Default
+                    try stdout.print("\x1b[0;39m", .{});
                     try stdout.print("{c}", .{c});
-                    try stdout.print("\x1b[0m", .{});
                 },
             }
+
+            // Reset all modes
+            try stdout.print("\x1b[0m", .{});
         }
         try stdout.print("\n", .{});
     }
