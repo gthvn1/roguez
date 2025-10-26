@@ -27,7 +27,7 @@ pub fn main() !void {
     var gpa = GpaType{};
     var allocator = gpa.allocator();
 
-    const m = try Map.of_string(&allocator, map_str);
+    var m = try Map.of_string(&allocator, map_str);
 
     // We need to set the terminal in Raw mode to avoid pressing enter
     // TODO:
@@ -40,14 +40,14 @@ pub fn main() !void {
     // - 1st line is the title
     try set_title(stdout);
 
-    // - then we have the maze
-    try draw_maze(stdout, &m);
-
     // - At line 1 + maze height + 1 we can print the position of the robot
     const robot_status_line = 1 + m.height + 1;
 
     try stdout.print("\x1b[{d};1H", .{robot_status_line});
-    try stdout.print("Robot: line {d}, column {d}\n", .{ m.robot.line, m.robot.column });
+    try stdout.print("Robot: line {d}, column {d}\n", .{
+        m.robot.line,
+        m.robot.column,
+    });
 
     try stdout.print("Use arrows keys to move, 'q' to quit\n", .{});
     try stdout.flush();
@@ -56,15 +56,18 @@ pub fn main() !void {
     const status_line = robot_status_line + 2;
 
     while (true) {
+        try draw_maze(stdout, &m);
+
         // Move cursor to status line and erase the line to be
         // ready to write new status.
         try stdout.print("\x1b[{d};1H\x1b[2K", .{status_line});
+
         if (read_char()) |carlu| {
             switch (carlu) {
-                'h', 0x44 => try stdout.print("ToDo: move left", .{}),
-                'j', 0x42 => try stdout.print("ToDo: move down", .{}),
-                'k', 0x41 => try stdout.print("ToDo: move up", .{}),
-                'l', 0x43 => try stdout.print("ToDo: move right", .{}),
+                'h', 0x44 => m.robot.column -= 1,
+                'j', 0x42 => m.robot.line += 1,
+                'k', 0x41 => m.robot.line -= 1,
+                'l', 0x43 => m.robot.column += 1,
                 'q' => {
                     try stdout.print("Bye !!!", .{});
                     try stdout.flush();
@@ -72,7 +75,6 @@ pub fn main() !void {
                 },
                 else => try stdout.print("You pressed {c}", .{carlu}),
             }
-            try stdout.flush();
         } else {
             try stdout.print("\nFailed to read a char\n", .{});
             try stdout.flush();
@@ -133,9 +135,8 @@ fn draw_maze(out: *std.Io.Writer, map: *const Map) !void {
                     try out.print("{c}", .{c});
                 },
                 '@' => {
-                    // Green
-                    try out.print("\x1b[1;32m", .{});
-                    try out.print("{c}", .{c});
+                    // Robot will be drawn later
+                    try out.print(" ", .{});
                 },
                 'a'...'z' => {
                     // Magenta
@@ -163,14 +164,18 @@ fn draw_maze(out: *std.Io.Writer, map: *const Map) !void {
                     try out.print("{c}", .{c});
                 },
             }
-
-            // Reset all modes
-            try out.print("\x1b[0m", .{});
         }
         try out.print("\n", .{});
     }
-    try out.print("\n", .{});
 
+    // Draw the robot in green. Not that line and color in ANSI starts from 1. While
+    // robot start from 0.
+    try out.print("\x1b[{d};{d}H", .{ map.robot.line + 1, map.robot.column + 1 });
+    try out.print("\x1b[1;32m", .{});
+    try out.print("@", .{});
+
+    // Reset all modes
+    try out.print("\x1b[0m", .{});
     // Don't forget to flush
     try out.flush();
 }
