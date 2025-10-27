@@ -81,9 +81,9 @@ make install
   - *To do*: If we cannot pick up the key we should be able to move over it
 - [x] Open door with the corresponding key
 - [x] Add an end when the flag is captured
-- [ ] Improve display using *ncurses* or whatever we find in *experimentations*
-- [ ] Try ANSI Escape Sequence to see if it can do the job
-- [ ] Give a try to [libaxis](https://github.com/rockorager/libvaxis)
+- [x] Try ANSI Escape Sequence to see if it can do the job
+  - It looks like it is clean enough. For our project it looks better than using C bindings.
+- [ ] Use what we find during *experimentations*
 - [ ] Implement a viewport for larger worlds
 - [ ] Add bombs, enemies, ...
 
