@@ -14,7 +14,7 @@ const Item = @import("state.zig").Item;
 const Pos = @import("pos.zig").Pos;
 pub const Dir = @import("pos.zig").Dir;
 
-pub const Ansi = @import("ansi.zig").Ansi;
+const Ansi = @import("ansi.zig").Ansi;
 
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the robot (@) and futur robots, boxes, traps... will be
@@ -24,10 +24,22 @@ pub const Ansi = @import("ansi.zig").Ansi;
 pub const Game = struct {
     board: Board,
     state: State,
+    term: Ansi,
+    log_line: usize,
+    board_line: usize,
 
     const GameCell = struct {
         tile: Tile, // Tile is from board
         item: ?Item,
+    };
+
+    const help = [_][]const u8{
+        "'q' to quit",
+        "'h' to move left",
+        "'j' to move down",
+        "'k' to move up",
+        "'l' to move right",
+        "You can use arrows to move",
     };
 
     fn getCellAt(self: *Game, pos: Pos) GameCell {
@@ -37,22 +49,69 @@ pub const Game = struct {
         };
     }
 
-    pub fn create(allocator: std.mem.Allocator, str: []const u8) !Game {
+    pub fn create(allocator: std.mem.Allocator, output: *std.Io.Writer, str: []const u8) !Game {
+        const term = Ansi.init(output);
         const board = try Board.create(allocator, str);
         const state = try State.create(allocator, str);
+
+        // Before returning we print the splash screen
+        try term.clearScreen();
+
+        // First line is the title
+        try term.setColor(Ansi.Color.red);
+        try term.setBold();
+        try term.setItalic();
+        try term.writeStrAndFlush("Welcome to RogueZ", 1, 12);
+        try term.resetAll();
+
+        // log are on line 3
+        const log_line = 3;
+        try term.setColor(Ansi.Color.white);
+        try term.setBold();
+        try term.setItalic();
+        try term.setUnderline();
+        try term.writeStrAndFlush("Logs", log_line, 1);
+        try term.resetAll();
+        try term.writeStrAndFlush("log will appear here", log_line + 1, 2);
+
+        // Print the header of the help after the log line
+        var current_line: usize = log_line + 3;
+        try term.setColor(Ansi.Color.white);
+        try term.setBold();
+        try term.setItalic();
+        try term.setUnderline();
+        try term.writeStrAndFlush("Help", current_line, 1);
+
+        // Now the sub item of the help
+        try term.resetAll();
+        try term.setColor(Ansi.Color.white);
+
+        for (help) |line| {
+            current_line += 1;
+            try term.writeStrAndFlush(line, current_line, 2);
+        }
+
+        // Reset things and update current line
+        try term.resetAll();
+
         return .{
             .board = board,
             .state = state,
+            .term = term,
+            .log_line = log_line,
+            .board_line = current_line + 2, // Keep some extra space
         };
     }
 
     pub fn destroy(self: *Game, allocator: std.mem.Allocator) void {
         self.board.destroy(allocator);
         self.state.destroy();
+        self.term.resetAll() catch return;
     }
 
-    pub fn print(self: *const Game, term: *const Ansi, start_line: usize) !void {
-        var current_line = start_line;
+    pub fn print(self: *const Game) !void {
+        var current_line = self.board_line;
+        const term = self.term;
 
         try term.setColor(Ansi.Color.white);
         try term.setBold();
@@ -89,15 +148,14 @@ pub const Game = struct {
 
         current_line += 1;
         try term.moveCursorTo(current_line, 1);
-        try term.eraseLine(current_line);
+        try term.eraseLine();
 
-        // TODO: From here use term to display the board with colors
         var board_iter = self.board.iter();
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {
                 current_line += 1;
                 try term.moveCursorTo(current_line, 1);
-                try term.eraseLine(current_line);
+                try term.eraseLine();
             }
 
             // If we have an item at the given position print it, otherwise
@@ -157,8 +215,8 @@ pub const Game = struct {
 
         // Before moving we need to check if we will hit something
         switch (next_cell.tile) {
-            .wall => std.debug.print("Oops, you hit a wall...\n", .{}),
-            .flag => std.debug.print("🏁 Victory! The robot has captured the flag!\n", .{}),
+            .wall => try self.term.writeStrAndFlush("Oops, you hit a wall...", self.log_line + 1, 2),
+            .flag => try self.term.writeStrAndFlush("🏁 Victory! The robot has captured the flag!\n", self.log_line + 1, 2),
 
             .floor => {
                 if (next_cell.item) |item| {
@@ -197,14 +255,14 @@ pub const Game = struct {
         switch (next_cell.tile) {
             .floor => {
                 if (next_cell.item) |_| {
-                    std.debug.print("TODO: An item blocks the path\n", .{});
+                    self.term.writeStrAndFlush("TODO: An item blocks the path", self.log_line + 1, 2) catch {};
                     return false;
                 }
                 self.state.moveBox(pos, next_pos) catch return false;
                 return true;
             },
-            .wall => std.debug.print("A wall blocks our path!\n", .{}),
-            .flag => std.debug.print("TODO: You catch the flag no?...\n", .{}),
+            .wall => self.term.writeStrAndFlush("A wall blocks our path!", self.log_line + 1, 2) catch {},
+            .flag => self.term.writeStrAndFlush("TODO: You catch the flag no?...", self.log_line + 1, 2) catch {},
         }
 
         return false;
@@ -212,10 +270,10 @@ pub const Game = struct {
 
     fn handleKey(self: *Game, pos: Pos, key: u8) bool {
         if (self.state.robot.addKey(key)) {
-            try self.state.removeKey(pos);
+            self.state.removeKey(pos) catch return false;
             return true;
         } else {
-            std.debug.print("It looks like you can not take a new key\n", .{});
+            self.term.writeStrAndFlush("It looks like you can not take a new key", self.log_line + 1, 2) catch {};
             return false;
         }
     }
@@ -224,7 +282,7 @@ pub const Game = struct {
         const key = std.ascii.toLower(door);
         const has_key = self.state.robot.hasKey(key);
         if (!has_key) {
-            std.debug.print("You need key <{c}> to open the door...", .{key});
+            self.term.writeStrAndFlush("You need key a key to open the door...", self.log_line + 1, 2) catch {};
         }
 
         return has_key;
@@ -237,7 +295,5 @@ pub fn readChar() u8 {
     const stdin = &stdin_reader.interface;
 
     const carlu: u8 = stdin.peekByte() catch return 0;
-
-    std.debug.print("\nYou pressed: 0x{x}\n", .{carlu});
     return carlu;
 }

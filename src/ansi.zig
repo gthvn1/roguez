@@ -70,8 +70,8 @@ pub const Ansi = struct {
         try self.output.print("\x1b[7m", .{});
     }
 
-    pub fn eraseLine(self: *const Ansi, line: usize) !void {
-        try self.output.print("\x1b[{d};1H\x1b[2K", .{line});
+    pub fn eraseLine(self: *const Ansi) !void {
+        try self.output.print("\x1b[2K", .{});
     }
 
     pub fn moveCursorTo(self: *const Ansi, line: usize, column: usize) !void {
@@ -90,13 +90,11 @@ pub const Ansi = struct {
     }
 
     pub fn writeStrAndFlush(self: *const Ansi, str: []const u8, line: usize, column: usize) !void {
-        // Move cursor to line
-        try self.output.print("\x1b[{d};{d}H", .{ line, column });
-        // Print the message
+        try self.moveCursorTo(line, column);
+        try self.eraseLine();
         try self.output.print("{s}", .{str});
         // Move cursor to beginning of next line
-        try self.output.print("\x1b[1E", .{});
-
+        try self.moveCursorTo(line + 1, 1);
         try self.flush();
     }
 };

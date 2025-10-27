@@ -99,8 +99,8 @@ pub const State = struct {
         for (str) |c| {
             switch (c) {
                 '@' => {
-                    if (robot_pos) |p| {
-                        std.debug.print("Already found a robot at {d}x{d}\n", .{ p.row, p.col });
+                    if (robot_pos) |_| {
+                        //std.debug.print("Already found a robot at {d}x{d}\n", .{ p.row, p.col });
                         return StateError.DuplicatedRobot;
                     } else {
                         robot_pos = pos;
@@ -141,17 +141,17 @@ pub const State = struct {
 
     pub fn moveRobotTo(self: *State, pos: Pos) !void {
         // Verifications are be done by the game logic, not here
-        std.debug.print("robot moves from {d}x{d} to ", .{ self.robot.pos.row, self.robot.pos.col });
+        //std.debug.print("robot moves from {d}x{d} to ", .{ self.robot.pos.row, self.robot.pos.col });
         _ = self.items.remove(self.robot.pos);
         try self.items.put(pos, .robot);
         self.robot.pos = pos;
-        std.debug.print("{d}x{d}\n", .{ self.robot.pos.row, self.robot.pos.col });
+        //std.debug.print("{d}x{d}\n", .{ self.robot.pos.row, self.robot.pos.col });
     }
 
     pub fn moveBox(self: *State, from: Pos, to: Pos) !void {
-        std.debug.print("moving box from {d}x{d} to {d}x{d}\n", .{
-            from.row, from.col, to.row, to.col,
-        });
+        //std.debug.print("moving box from {d}x{d} to {d}x{d}\n", .{
+        //    from.row, from.col, to.row, to.col,
+        //});
         // TODO: We can check that we are really removing a box
         _ = self.items.remove(from);
         try self.items.put(to, .box);

@@ -25,54 +25,11 @@ pub fn main() !void {
     var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
     const stdout = &stdout_writer.interface;
 
-    const term = Ansi.init(stdout);
-
-    var g = try r.Game.create(allocator, map);
+    var g = try r.Game.create(allocator, stdout, map);
     defer g.destroy(allocator);
 
-    try term.clearScreen();
-
-    // First line is the title
-    var current_line: usize = 1;
-    try term.setColor(Ansi.Color.red);
-    try term.setBold();
-    try term.setItalic();
-    try term.writeStrAndFlush("Welcome to RogueZ", current_line, 12);
-    try term.resetAll();
-
-    // Then comes the menu
-    const help = [_][]const u8{
-        " 'q' to quit",
-        " 'h' to move left",
-        " 'j' to move down",
-        " 'k' to move up",
-        " 'l' to move right",
-        "You can use arrows to move",
-    };
-
-    // Print the header of the help
-    current_line += 1;
-    try term.setColor(Ansi.Color.white);
-    try term.setBold();
-    try term.setItalic();
-    try term.setUnderline();
-    try term.writeStrAndFlush("Help", current_line, 1);
-
-    // Now the sub item of the help
-    try term.resetAll();
-    try term.setColor(Ansi.Color.white);
-
-    for (help) |line| {
-        current_line += 1;
-        try term.writeStrAndFlush(line, current_line, 1);
-    }
-
-    // Reset things and update current line
-    try term.resetAll();
-    current_line += 2; // Add an extra line for clarity
-
     while (true) {
-        try g.print(&term, current_line);
+        try g.print();
         switch (r.readChar()) {
             'h', 0x44 => try g.moveRobot(r.Dir.left),
             'j', 0x42 => try g.moveRobot(r.Dir.down),
@@ -83,7 +40,6 @@ pub fn main() !void {
         }
     }
 
-    try term.resetAll();
     // Restore old settings
     _ = std.os.linux.tcsetattr(0, std.posix.TCSA.NOW, &old_settings);
 }
