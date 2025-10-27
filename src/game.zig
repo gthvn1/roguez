@@ -14,6 +14,8 @@ const Item = @import("state.zig").Item;
 const Pos = @import("pos.zig").Pos;
 pub const Dir = @import("pos.zig").Dir;
 
+pub const Ansi = @import("ansi.zig").Ansi;
+
 // - For the board we are only looking for wall (#) and floor (all other characters).
 // - The position of the robot (@) and futur robots, boxes, traps... will be
 //   part of the state of the game.
@@ -49,18 +51,43 @@ pub const Game = struct {
         self.state.destroy();
     }
 
-    pub fn print(self: *const Game) void {
-        std.debug.print("\n==== Robot items ====\n", .{});
+    pub fn print(self: *const Game, term: *const Ansi, start_line: usize) !void {
+        var current_line = start_line;
+
+        try term.setColor(Ansi.Color.white);
+        try term.setBold();
+        try term.setItalic();
+        try term.setUnderline();
+        try term.writeStrNoFlush("Robot items", current_line, 1);
+
+        // Reset stuff for items
+        try term.resetAll();
+        try term.setColor(Ansi.Color.white);
+        try term.writeCharNoFlush(':');
+        try term.writeCharNoFlush(' ');
+
         var it = self.state.robot.items_iterator();
         while (it.next()) |i| {
             switch (i) {
-                .key => |k| std.debug.print("<{c}> ", .{k}),
-                .empty => std.debug.print(". ", .{}),
+                .key => |k| try term.writeCharNoFlush(k),
+                .empty => try term.writeCharNoFlush('.'),
                 else => unreachable,
             }
+            try term.writeCharNoFlush(' ');
         }
-        std.debug.print("\n==== Board ====\n", .{});
+        // Reset all does the flush
+        try term.resetAll();
 
+        // New we print the board
+        current_line += 2; // Add an extra line for clarity
+        try term.setColor(Ansi.Color.white);
+        try term.setBold();
+        try term.setItalic();
+        try term.setUnderline();
+        try term.writeStrAndFlush("Board", current_line, 1);
+        try term.resetAll();
+
+        // TODO: From here use term to display the board with colors
         var board_iter = self.board.iter();
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {
