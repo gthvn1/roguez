@@ -42,8 +42,10 @@ pub fn main() !void {
     // - 1st line is the title
     const title_line: comptime_int = 1;
     try term.setColor(Ansi.Color.red);
+    try term.setBold();
+    try term.setItalic();
     try term.writeStrAndFlush("Welcome to RogueZ", title_line, 12);
-    try term.resetColor();
+    try term.resetAll();
 
     // - At line 1 + maze height + 1 we can print the position of the robot
     const status_line = 1 + m.height + 1;
@@ -128,8 +130,8 @@ fn draw_maze(term: *const Ansi, map: *const Map) !void {
                     try term.writeCharNoFlush(c);
                 },
                 '.' => {
-                    try term.setColor(Ansi.Color.black);
-                    try term.writeCharNoFlush(c);
+                    try term.resetColor();
+                    try term.writeCharNoFlush(' ');
                 },
                 '#' => {
                     try term.setColor(Ansi.Color.cyan);

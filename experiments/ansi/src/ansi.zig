@@ -54,6 +54,14 @@ pub const Ansi = struct {
         try self.output.print("\x1b[{d}m", .{@intFromEnum(color)});
     }
 
+    pub fn setBold(self: *const Ansi) !void {
+        try self.output.print("\x1b[1m", .{});
+    }
+
+    pub fn setItalic(self: *const Ansi) !void {
+        try self.output.print("\x1b[3m", .{});
+    }
+
     pub fn eraseLine(self: *const Ansi, line: usize) !void {
         try self.output.print("\x1b[{d};1H\x1b[2K", .{line});
     }
