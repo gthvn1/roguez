@@ -1,6 +1,5 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
-const Glyph = @import("glyph.zig").Glyph;
 
 const ItemError = error{
     UnknownItem,
@@ -20,20 +19,6 @@ pub const Item = union(enum) {
             '&' => .box,
             '@' => .robot,
             else => ItemError.UnknownItem,
-        };
-    }
-
-    pub fn toGlyph(self: Item) Glyph {
-        // https://www.unicodecharacter.org/
-        const robot = "\u{263A}";
-        const box = "\u{25A4}";
-
-        return switch (self) {
-            .key => |k| Glyph.fromChar(k),
-            .door => |d| Glyph.fromChar(d),
-            .box => Glyph.fromUtf8(box),
-            .robot => Glyph.fromUtf8(robot),
-            .empty => Glyph.fromChar(' '),
         };
     }
 };
@@ -135,18 +120,6 @@ pub const State = struct {
                 },
                 else => pos.col += 1,
             }
-        }
-
-        // Before returning we print the items found all along the way
-        var iter = items.iterator();
-
-        std.debug.print("==== List of items found ==== \n", .{});
-        while (iter.next()) |item| {
-            std.debug.print("  - {s} at {d}x{d}\n", .{
-                item.value_ptr.toGlyph().slice(),
-                item.key_ptr.row,
-                item.key_ptr.col,
-            });
         }
 
         return State{

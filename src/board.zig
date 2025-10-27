@@ -1,6 +1,5 @@
 const std = @import("std");
 const Pos = @import("pos.zig").Pos;
-const Glyph = @import("glyph.zig").Glyph;
 
 pub const Tile = enum {
     wall,
@@ -12,18 +11,6 @@ pub const Tile = enum {
             '#' => .wall,
             '$' => .flag,
             else => .floor,
-        };
-    }
-
-    pub fn toGlyph(self: Tile) Glyph {
-        // https://www.unicodecharacter.org/
-        const wall = "\u{2612}";
-        const flag = "\u{2691}";
-
-        return switch (self) {
-            .wall => Glyph.fromUtf8(wall),
-            .flag => Glyph.fromUtf8(flag),
-            .floor => Glyph.fromChar(' '),
         };
     }
 };

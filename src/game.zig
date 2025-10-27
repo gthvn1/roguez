@@ -87,23 +87,68 @@ pub const Game = struct {
         try term.writeStrAndFlush("Board", current_line, 1);
         try term.resetAll();
 
+        current_line += 1;
+        try term.moveCursorTo(current_line, 1);
+        try term.eraseLine(current_line);
+
         // TODO: From here use term to display the board with colors
         var board_iter = self.board.iter();
         while (board_iter.next()) |cell| {
             if (cell.pos.col == 0) {
-                std.debug.print("\n", .{});
+                current_line += 1;
+                try term.moveCursorTo(current_line, 1);
+                try term.eraseLine(current_line);
             }
 
             // If we have an item at the given position print it, otherwise
             // print the tile.
             if (self.state.getItemAt(cell.pos)) |item| {
-                std.debug.print("{s} ", .{item.toGlyph().slice()});
+                switch (item) {
+                    .key => |k| {
+                        try term.setColor(Ansi.Color.magenta);
+                        try term.writeCharNoFlush(k);
+                    },
+                    .door => |d| {
+                        try term.setColor(Ansi.Color.cyan);
+                        try term.writeCharNoFlush(d);
+                    },
+                    .box => {
+                        try term.setColor(Ansi.Color.yellow);
+                        try term.writeCharNoFlush('&');
+                    },
+                    .robot => {
+                        try term.setColor(Ansi.Color.blue);
+                        try term.writeCharNoFlush('@');
+                    },
+                    .empty => {
+                        try term.resetColor();
+                        try term.writeCharNoFlush(' ');
+                    },
+                }
             } else {
-                std.debug.print("{s} ", .{cell.tile.toGlyph().slice()});
+                switch (cell.tile) {
+                    .wall => {
+                        try term.setReverse();
+                        try term.setColor(Ansi.Color.white);
+                        try term.writeCharNoFlush(' ');
+                    },
+                    .flag => {
+                        try term.setColor(Ansi.Color.red);
+                        try term.writeCharNoFlush('$');
+                    },
+                    .floor => {
+                        try term.resetColor();
+                        try term.writeCharNoFlush(' ');
+                    },
+                }
             }
+
+            try term.resetAll();
         }
 
-        std.debug.print("\n\n", .{});
+        current_line += 2;
+        try term.moveCursorTo(current_line, 1);
+        try term.resetAll();
     }
 
     pub fn moveRobot(self: *Game, direction: Dir) !void {

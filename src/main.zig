@@ -9,9 +9,10 @@ pub fn main() !void {
     const map = @import("map.zig").map;
 
     // We need to set the terminal in Raw mode to avoid pressing enter
-    // TODO: Should we restore the old_settings?
     var settings: std.os.linux.termios = undefined;
     _ = std.os.linux.tcgetattr(0, &settings);
+
+    const old_settings = settings;
 
     // Disabling canonical mode allow the input to be immediatly available
     settings.lflag.ICANON = false;
@@ -81,4 +82,8 @@ pub fn main() !void {
             else => continue,
         }
     }
+
+    try term.resetAll();
+    // Restore old settings
+    _ = std.os.linux.tcsetattr(0, std.posix.TCSA.NOW, &old_settings);
 }

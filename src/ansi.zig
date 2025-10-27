@@ -66,6 +66,10 @@ pub const Ansi = struct {
         try self.output.print("\x1b[4m", .{});
     }
 
+    pub fn setReverse(self: *const Ansi) !void {
+        try self.output.print("\x1b[7m", .{});
+    }
+
     pub fn eraseLine(self: *const Ansi, line: usize) !void {
         try self.output.print("\x1b[{d};1H\x1b[2K", .{line});
     }
